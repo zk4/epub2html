@@ -76,11 +76,14 @@ class Epub2Html():
         raw_menu =Path(join(self.textdir,"part0000.html")).read_text()
         raw_menu = raw_menu.encode('utf-8')
         raw_menu_dom = etree.HTML(raw_menu)
-        raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
-        raw_menu=re.sub(r"part\w+\.html","",raw_menu)
-        menu=self.template.replace("${menu}$",raw_menu)
-        # menu = html.unescape(menu)
-        return menu
+        parts = raw_menu_dom.xpath("//body/*")
+        raw_menus = []
+        for p in parts:
+            raw_menu = etree.tostring(p,pretty_print=True).decode('utf-8')
+            raw_menus.append(raw_menu)
+        raw_menus = "".join(raw_menus)
+        raw_menu=re.sub(r"part\w+\.html","",raw_menus)
+        return raw_menu
 
     
     def gen(self):
