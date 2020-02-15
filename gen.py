@@ -33,14 +33,14 @@ class Epub2Html():
         for d in divs:
             self.parseDiv(d)
 
-    def unzipFile(self):
+    def unzip(self):
         tokens =self.epubpath.split(".")
+
         only_name = self.epubpath+".unzip"
         if len(tokens)>0:
             only_name= tokens[-2] 
         else:
             print("can`t extract name!")
-
 
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(f"./{only_name}")
@@ -67,11 +67,28 @@ class Epub2Html():
         for cdirname, dirnames, filenames in os.walk(rootdir):
             if rootdir ==  cdirname:
                 return filenames 
+
+
+    def genMenu(self):
+        # self.genMenuTree("./a/text/part0000.html")
+        raw_menu =Path(join(self.textdir,"part0000.html")).read_text()
+        raw_menu = raw_menu.encode('utf-8')
+        raw_menu_dom = etree.HTML(raw_menu)
+        raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+        raw_menu=re.sub(r"part\w+\.html","",raw_menu)
+        menu=self.template.replace("${menu}$",raw_menu)
+        menu = html.unescape(menu)
+        return menu
+
     
     def gen(self):
         full_content = self.genContent()
-        full_content = self.template.replace("${content}$",full_content)
-        Path(join(self.filedir,"new_content.html")).write_text(full_content)
+        menu = self.genMenu()
+
+        self.template = self.template.replace("${content}$",full_content)
+        self.template = self.template.replace("${menu}$",menu)
+
+        Path(join(self.filedir,"index.html")).write_text(self.template)
 
 
 
