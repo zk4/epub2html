@@ -1,52 +1,90 @@
 #coding: utf-8
 from lxml import etree
 from pathlib import Path
+import re
 import zipfile
+import os
+import html
+from os.path import dirname,basename,join
 
-def parseDiv(dom,depth=0):
-    titles=  dom.xpath("./a/text()")
-    if len(titles)>0:
-        print(depth* "---",titles[0])
+class Epub2Html():
+    def __init__(self,epubpath):
+        self.epubpath = epubpath 
+        self.template =Path("./index.html").read_text()
+        self.filedir = join(dirname(self.epubpath),basename(self.epubpath).split(".")[0])
+        self.textdir = os.path.join(self.filedir ,"text")
 
-    divs2=  dom.xpath("./div")
-    if len(divs2)>0:
-        for d in divs2:
-            parseDiv(d,depth+1)
+    
+    def parseDiv(self,dom,depth=0):
+        titles=  dom.xpath("./a/text()")
+        if len(titles)>0:
+            print(depth* "---",titles[0])
 
-def genMenuTree(filepath):
-    contents =Path(filepath).read_text()
-    contents = contents.encode('utf-8')
-    dom = etree.HTML(contents)
-    divs = dom.xpath("./body/div")
-    for d in divs:
-        parseDiv(d)
+        divs2=  dom.xpath("./div")
+        if len(divs2)>0:
+            for d in divs2:
+                self.parseDiv(d,depth+1)
 
-def unzipFile(filepath):
-    tokens =filepath.split(".")
-    only_name = filepath+".unzip"
-    if len(tokens)>0:
-        only_name= tokens[-2] 
-    else:
-        print("can`t extract name!")
+    def genMenuTree(self,filepath):
+        contents =Path(filepath).read_text()
+        contents = contents.encode('utf-8')
+        dom = etree.HTML(contents)
+        divs = dom.xpath("./body/div")
+        for d in divs:
+            self.parseDiv(d)
 
-
-    with zipfile.ZipFile(filepath,'r') as zip_ref:
-        zip_ref.extractall(f"./{only_name}")
-
-def shrinkImg():
-    pass
-
-
-def filterContent():
-    pass
+    def unzipFile(self):
+        tokens =self.epubpath.split(".")
+        only_name = self.epubpath+".unzip"
+        if len(tokens)>0:
+            only_name= tokens[-2] 
+        else:
+            print("can`t extract name!")
 
 
-def embedContent():
-    pass
+        with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
+            zip_ref.extractall(f"./{only_name}")
+
+
+    def genContent(self):
+        content_list = []
+        for text in  self.traverse(self.textdir):
+            if text in  ["part0000.html","part0001.html"]:
+                continue
+            text = os.path.join(self.textdir,text)
+            print(text)
+            raw_menu = Path(text).read_text()
+            raw_menu = raw_menu.encode('utf-8')
+            raw_menu_dom = etree.HTML(raw_menu)
+            raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            content_list.append(raw_menu)
+
+        full_content = "\n".join(content_list)
+        full_content = html.unescape(full_content)
+        return full_content
+        
+    def traverse(self,rootdir):
+        for cdirname, dirnames, filenames in os.walk(rootdir):
+            if rootdir ==  cdirname:
+                return filenames 
+    
+    def gen(self):
+        full_content = self.genContent()
+        full_content = self.template.replace("${content}$",full_content)
+        Path(join(self.filedir,"new_content.html")).write_text(full_content)
+
 
 
 if __name__ == "__main__":
-    unzipFile("./a.epub")
+    # unzipFile("./a.epub")
+    # genMenuTree("./a/text/part0000.html")
+    # raw_menu =Path("./a/text/part0000.html").read_text()
+    # raw_menu = raw_menu.encode('utf-8')
+    # raw_menu_dom = etree.HTML(raw_menu)
+    # raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+    # raw_menu=re.sub(r"part\w+\.html","",raw_menu)
+    # filled_template=template.replace("${menu}$",raw_menu)
 
-    genMenuTree("./a/text/part0000.html")
-
+    # Path("./a/new_menu.html").write_text(filled_template)
+    e = Epub2Html("./a.epub")
+    e.gen()
