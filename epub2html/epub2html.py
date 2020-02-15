@@ -17,7 +17,7 @@ class Epub2Html():
         template_path = os.path.join(script_dir,"template.html")
 
         self.template =Path(template_path).read_text()
-        (only_name,ext)=  os.path.splitext(basename(self.epubpath))
+        (only_name,_)=  os.path.splitext(basename(self.epubpath))
         self.only_name = only_name
 
         self.filedir = join(dirname(self.epubpath),only_name)
@@ -50,7 +50,7 @@ class Epub2Html():
             zip_ref.extractall(os.path.join(self.outputdir,f"{self.only_name}"))
 
 
-    def genContent(self):
+    def genContent(self,hash_files):
         content_list = []
         print("self.textdir",self.textdir)
         for text in  self.traverse(self.textdir):
@@ -64,6 +64,10 @@ class Epub2Html():
             # parts = raw_menu_dom.xpath("//body")[0]
             # for p in parts:
             raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            if text in hash_files:
+                print('----------------')
+                raw_menu = f"<a href=\"#{self.hash(text)}\"</a>{raw_menu}"
+
             content_list.append(raw_menu)
 
         full_content = "".join(content_list)
@@ -71,35 +75,51 @@ class Epub2Html():
         return full_content
         
     def traverse(self,rootdir):
-        for cdirname, dirnames, filenames in os.walk(rootdir):
+        for cdirname, _, filenames in os.walk(rootdir):
             if rootdir ==  cdirname:
                 return filenames 
-
+    def hash(self, s):
+        import base64
+        tag = base64.b64encode(s.encode('ascii'))
+        tag = tag.decode("ascii")
+        return tag
 
     def genMenu(self,menuhtmlname):
-        # self.genMenuTree("./a/text/part0000.html")
         raw_menu =Path(join(self.textdir,menuhtmlname)).read_text()
         raw_menu = raw_menu.encode('utf-8')
         raw_menu_dom = etree.HTML(raw_menu)
         parts = raw_menu_dom.xpath("//body/*")
         raw_menus = []
+        need_hash_names = []
         for p in parts:
             raw_menu = etree.tostring(p,pretty_print=True).decode('utf-8')
-            raw_menus.append(raw_menu)
-        raw_menus = "".join(raw_menus)
-        raw_menu=re.sub(r"part\w+\.html","",raw_menus)
-        return raw_menu
+            # only page link, no hash jump
+            a = re.search("\"part\d+.html\"",raw_menu)
+            if a:
+                need_hash_names.append(a.group())
+                # tag = base64.b64encode(a.group().encode('ascii'))
+                # tag = tag.decode("ascii")
+
+                raw_menu = re.sub("(part\d+.html)","#"+self.hash(a.group()),raw_menu)
+            else:
+                raw_menu=re.sub(r"part\w+\.html","",raw_menu)
+            
+            raw_menus.append(raw_menu) 
+        return "".join(raw_menus),need_hash_names
 
     
     def gen(self):
         self.unzip()
-        full_content = self.genContent()
-        menu = self.genMenu("part0000.html")
-        menu =menu + self.genMenu("part0001.html")
+        menu, hash_files= self.genMenu("part0000.html")
+        menu2, hash_files2= self.genMenu("part0001.html")
+
+        menu =menu + menu2
+        hash_files =hash_files + hash_files2
+
+        full_content = self.genContent(hash_files)
+
         self.template = self.template.replace("${menu}$",menu)
-
         self.template = self.template.replace("${content}$",full_content)
-
         Path(join(self.outputdir, self.only_name,"./index.html")).write_text(self.template)
         self.copyJs()
 
