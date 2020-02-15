@@ -56,11 +56,12 @@ class Epub2Html():
             raw_menu = Path(text).read_text()
             raw_menu = raw_menu.encode('utf-8')
             raw_menu_dom = etree.HTML(raw_menu)
-            raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
-            content_list.append(raw_menu)
+            parts = raw_menu_dom.xpath("//body/*")
+            for p in parts:
+                raw_menu = etree.tostring(p,pretty_print=True).decode('utf-8')
+                content_list.append(raw_menu)
 
-        full_content = "\n".join(content_list)
-        full_content = html.unescape(full_content)
+        full_content = "".join(content_list)
         return full_content
         
     def traverse(self,rootdir):
@@ -77,7 +78,7 @@ class Epub2Html():
         raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
         raw_menu=re.sub(r"part\w+\.html","",raw_menu)
         menu=self.template.replace("${menu}$",raw_menu)
-        menu = html.unescape(menu)
+        # menu = html.unescape(menu)
         return menu
 
     
