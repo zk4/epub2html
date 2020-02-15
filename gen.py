@@ -61,6 +61,7 @@ class Epub2Html():
             content_list.append(raw_menu)
 
         full_content = "".join(content_list)
+        full_content=re.sub(r"\.\.\/images","./images",full_content)
         return full_content
         
     def traverse(self,rootdir):
