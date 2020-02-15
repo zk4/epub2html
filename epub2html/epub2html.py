@@ -76,9 +76,9 @@ class Epub2Html():
                 return filenames 
 
 
-    def genMenu(self):
+    def genMenu(self,menuhtmlname):
         # self.genMenuTree("./a/text/part0000.html")
-        raw_menu =Path(join(self.textdir,"part0000.html")).read_text()
+        raw_menu =Path(join(self.textdir,menuhtmlname)).read_text()
         raw_menu = raw_menu.encode('utf-8')
         raw_menu_dom = etree.HTML(raw_menu)
         parts = raw_menu_dom.xpath("//body/*")
@@ -94,7 +94,8 @@ class Epub2Html():
     def gen(self):
         self.unzip()
         full_content = self.genContent()
-        menu = self.genMenu()
+        menu = self.genMenu("part0000.html")
+        menu =menu + self.genMenu("part0001.html")
         self.template = self.template.replace("${menu}$",menu)
 
         self.template = self.template.replace("${content}$",full_content)
