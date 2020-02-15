@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import zipfile
 import os
+import sys
 import html
 from os.path import dirname,basename,join
 
@@ -11,7 +12,8 @@ class Epub2Html():
     def __init__(self,epubpath):
         self.epubpath = epubpath 
         self.template =Path("./index.html").read_text()
-        self.filedir = join(dirname(self.epubpath),basename(self.epubpath).split(".")[0])
+        (only_name,ext)=  os.path.splitext(basename(self.epubpath))
+        self.filedir = join(dirname(self.epubpath),only_name)
         self.absfiledir = os.path.abspath(self.filedir)
         self.textdir = os.path.join(self.filedir ,"text")
 
@@ -35,14 +37,10 @@ class Epub2Html():
             self.parseDiv(d)
 
     def unzip(self):
-        tokens =self.epubpath.split(".")
+        (only_name,ext)=  os.path.splitext(basename(self.epubpath))
 
-        only_name = self.epubpath+".unzip"
-        if len(tokens)>0:
-            only_name= tokens[-2] 
-        else:
-            print("can`t extract name!")
 
+        print("only_name:",only_name)
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(f"./{only_name}")
 
@@ -50,17 +48,17 @@ class Epub2Html():
     def genContent(self):
         content_list = []
         for text in  self.traverse(self.textdir):
-            if text in  ["part0000.html","part0001.html"]:
+            if text in  ["part0000.html"]:
                 continue
             text = os.path.join(self.textdir,text)
             print(text)
             raw_menu = Path(text).read_text()
             raw_menu = raw_menu.encode('utf-8')
             raw_menu_dom = etree.HTML(raw_menu)
-            parts = raw_menu_dom.xpath("//body/*")
-            for p in parts:
-                raw_menu = etree.tostring(p,pretty_print=True).decode('utf-8')
-                content_list.append(raw_menu)
+            # parts = raw_menu_dom.xpath("//body")[0]
+            # for p in parts:
+            raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            content_list.append(raw_menu)
 
         full_content = "".join(content_list)
         return full_content
@@ -87,6 +85,7 @@ class Epub2Html():
 
     
     def gen(self):
+        self.unzip()
         full_content = self.genContent()
         menu = self.genMenu()
         self.template = self.template.replace("${menu}$",menu)
@@ -104,5 +103,6 @@ class Epub2Html():
 
 
 if __name__ == "__main__":
-    e = Epub2Html("./a.epub")
+    args = sys.argv
+    e = Epub2Html(args[1])
     e.gen()
