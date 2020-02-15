@@ -105,5 +105,12 @@ class Epub2Html():
 
 if __name__ == "__main__":
     args = sys.argv
-    e = Epub2Html(args[1])
+
+    filepath = args[1]
+    if filepath[0]!="." or filepath[0]!="/":
+        # relative path
+        filepath= "./"+filepath
+
+    print("filepaht",filepath)
+    e = Epub2Html(filepath)
     e.gen()
