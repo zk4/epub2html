@@ -1,11 +1,11 @@
 # why 
-Read epub in PC is pain as hell. I try a lot tool for better view experience. No luck.
+Read epub in PC is pain as hell. I have tried a lot tool for better view experience. No luck.
 - Loading is slow because of the splitted file.
 - No smooth scrolling.
 - pdf generating is so ugly 
 	
-BUT! we have chrome! rendering HTML is super fast. Why dont we take advantage of it.
-So, the basic idea it convert epub to a static html. That's it.
+BUT! we have chrome! Why dont we take advantage of it.
+So, the basic idea is converting epub to a static html. That's it.
 
 
 # usage 
