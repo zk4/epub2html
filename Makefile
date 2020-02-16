@@ -40,7 +40,7 @@ uninstall: rm
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html "/Users/zk/Downloads/隐性逻辑：教你快速切换思考方式-卡尔•诺顿.epub"
+	python3 -m epub2html "/Users/zk/Downloads/隐性逻辑：教你快速切换思考方式-卡尔•诺顿.epub" -o ./
 	
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"
