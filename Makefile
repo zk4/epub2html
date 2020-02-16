@@ -40,8 +40,10 @@ uninstall:
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html  "Vim实用技巧（第2版）【三秋书屋www.d4j.cn】.epub"
+	python3 -m epub2html  "./b.epub" "./"
 	
+wrun:
+	watchexec -rce py "source ~/.bash_profile && make run"
 help:
 	python3 -m epub2html --help
 all: rm uninstall install run 

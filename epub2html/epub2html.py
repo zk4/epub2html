@@ -1,4 +1,5 @@
 #coding: utf-8
+
 import argparse
 from lxml import etree
 import xmltodict
@@ -27,28 +28,35 @@ class Epub2Html():
         self.textdir = os.path.join(outputdir,only_name ,"text")
 
     
-    def _genMemuTree(self,node,depth=0):
+    def _genMemuTree(self,node,ulist,depth=0):
         for cc in node.findall("."):
-            name = cc.find("./navLabel/text")
+            name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
             attrib = link.attrib["src"]
-            print(depth, name.text.strip(),attrib)
-            yield depth, name.text.strip(),attrib
+            print(depth, name,attrib)
+            attrib=re.sub(r"text\/part\w+\.html","index.html",attrib)
+            ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
             
+
             subs =cc.findall("./navPoint")
             if len(subs)>0:
                 for d in subs:
-                    yield from self._genMemuTree(d,depth+1)
+                    ulist.append("<ul>")
+                    self._genMemuTree(d,ulist,depth+1)
+                    ulist.append("</ul>")
 
     def genMemuTree(self,path):
         contents = Path(path).read_text()
         contents = contents
-        print(type(contents))
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
+        contents = contents.encode('utf-8')
         root = etree.fromstring(contents)
-        print(root.tag)
+        ulist =[]
+        ulist.append("<ul class=\"nav nav-sidebar \">")
         for c in root.findall("./navMap/navPoint"):
-            yield from self._genMemuTree(c,0)
+            self._genMemuTree(c,ulist,0)
+        ulist.append("</ul>")
+        return "\n".join(ulist),[]
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
@@ -61,8 +69,8 @@ class Epub2Html():
         for text in  self.traverse(self.textdir):
             if text in  ["part0000.html"]:
                 continue
+            print("handle: ",text)
             text = os.path.join(self.textdir,text)
-            print(text)
             raw_menu = Path(text).read_text()
             raw_menu = raw_menu.encode('utf-8')
             raw_menu_dom = etree.HTML(raw_menu)
@@ -115,11 +123,11 @@ class Epub2Html():
     
     def gen(self):
         self.unzip()
-        menu, hash_files= self.genMenu("part0000.html")
-        menu2, hash_files2= self.genMenu("part0001.html")
+        menu, hash_files= self.genMemuTree(os.path.join(self.filedir,"toc.ncx"))
+        # menu2, hash_files2= self.genMenu("part0001.html")
 
-        menu =menu + menu2
-        hash_files =hash_files + hash_files2
+        # menu =menu + menu2
+        # hash_files =hash_files + hash_files2
 
         full_content = self.genContent(hash_files)
 

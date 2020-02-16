@@ -4,19 +4,21 @@ from epub2html import DisableXmlNamespaces
 from pathlib import Path
 import re
 
-def _genMemuTree(node,depth=0):
+def _genMemuTree(node,ulist,depth=0):
     for cc in node.findall("."):
-        name = cc.find("./navLabel/text")
+        name = cc.find("./navLabel/text").text.strip()
         link = cc.find("./content")
         attrib = link.attrib["src"]
-        print(depth, name.text.strip(),attrib)
-        yield depth, name.text.strip(),attrib
+        print(depth, name,attrib)
+        ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
+        yield depth, name,attrib
         
         subs =cc.findall("./navPoint")
         if len(subs)>0:
             for d in subs:
-                yield from _genMemuTree(d,depth+1)
-
+                ulist.append("<ul>")
+                yield from _genMemuTree(d,ulist,depth+1)
+                ulist.append("</ul>")
 def genMemuTree(path):
     contents = Path(path).read_text()
     contents = contents
@@ -24,8 +26,14 @@ def genMemuTree(path):
     contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
     root = etree.fromstring(contents)
     print(root.tag)
+    ulist =[]
+    ulist.append("<ul class=\"nav nav-sidebar \">")
     for c in root.findall("./navMap/navPoint"):
-        yield from _genMemuTree(c,0)
+        yield from _genMemuTree(c,ulist,0)
+    ulist.append("</ul>")
+    print("\n".join(ulist))
+    diskulist = Path("ullist.html")
+    diskulist.write_text("\n".join(ulist))
 
 
 # <ul class="nav nav-sidebar noSelect">
