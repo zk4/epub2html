@@ -12,8 +12,10 @@ So, the basic idea is converting epub to a static html. That's it.
 # usage 
 ``` bash
 pip install epub2html
-epub2html abc.epub  ./
+epub2html abc.epub  
+
 ```
+will open your converted epub html file in browser .
 
 
 # todo 

@@ -28,6 +28,11 @@ class Epub2Html():
         self.absfiledir = os.path.abspath(self.filedir)
         self.outputdir =outputdir
         self.textdir = os.path.join(outputdir,only_name ,"text")
+        self.indexHtmlLoc =  os.path.join(outputdir,only_name ,"index.html")
+
+
+    def getIndexLoc(self):
+        return self.indexHtmlLoc
 
     
     def _genMemuTree(self,node,need_hash_names,ulist,depth=0):
@@ -169,10 +174,16 @@ def main(args):
     if filepath[0]!="." and filepath[0]!="/":
         filepath= "./"+filepath
     filepath = os.path.abspath(filepath)
-    outputdir = os.path.abspath(args.outputdir)
+    outputdir ="./" #os.path.abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
-    e.gen()
+    # e.gen()
+    bashCommand = "open '" + e.getIndexLoc() +"'"
+    import subprocess
+
+    subprocess.check_call(bashCommand,
+                          shell=True)
+
 
 def entry_point():
     parser = createParse()
@@ -183,5 +194,5 @@ def entry_point():
 def createParse():
     parser = argparse.ArgumentParser( formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="")
     parser.add_argument("filepath",  help="filepath" )
-    parser.add_argument("outputdir",  help="outputdir" )
+    # parser.add_argument("outputdir",  help="outputdir" )
     return parser

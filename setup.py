@@ -24,7 +24,7 @@ if __name__ == '__main__':
         long_description_content_type='text/markdown',
         download_url=__download_url__,
         license=__license__,
-        python_requires='>3.0.0',
+        python_requires=">3.0.0",
         zip_safe=False,
         packages=find_packages(exclude=['tests', 'tests.*']),
         package_data={

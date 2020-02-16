@@ -31,7 +31,7 @@ coverage:
 	pytest --cov=epub2html/ tests/
 
 main:
-	python3 -m epub2html "./a.epub" "./"
+	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
 
 install: uninstall
 	pip3 install . 
@@ -40,7 +40,7 @@ uninstall:
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html  "./b.epub" "./"
+	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
 	
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"
