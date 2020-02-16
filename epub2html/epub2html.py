@@ -10,6 +10,9 @@ import os
 import sys
 import html
 from os.path import dirname,basename,join
+from urllib.parse import unquote
+import html.parser as htmlparser
+parser = htmlparser.HTMLParser()
 
 class Epub2Html(): 
     def __init__(self,epubpath,outputdir):
@@ -74,25 +77,28 @@ class Epub2Html():
         content_list = []
         print("self.textdir",self.textdir)
         for only_name in  self.traverse(self.textdir):
-            if only_name in  ["part0000.html"]:
+            if only_name in  ["part0000.html","part0001.html"]:
                 continue
+
             full_path = os.path.join(self.textdir,only_name)
             raw_content = Path(full_path).read_text()
+
+
             raw_content = raw_content.encode('utf-8')
             raw_content_dom = etree.HTML(raw_content)
-            raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
             raw_content = self.washBody(raw_content)
-            if only_name in  ["part0009_split_000.html"]:
-                print(raw_content)
+
+            if only_name in  ["part0004_split_001.html"]:
+                print(parser.unescape(raw_content))
 
             # ad slef generated hash
             short_link = os.path.basename(full_path)
             if short_link in hash_files:
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
-                # print(short_link,raw_content)
 
-            content_list.append(raw_content)
+            content_list.append(parser.unescape(raw_content))
 
         full_content = "".join(content_list)
         full_content = self.washImageLink(full_content)
@@ -124,7 +130,7 @@ class Epub2Html():
         raw_menus = []
         need_hash_names = []
         for p in parts:
-            raw_menu = etree.tostring(p,pretty_print=True).decode('utf-8')
+            raw_menu = etree.tostring(p,method='html').decode('utf-8')
             # only page link, no hash jump
             a = re.search("\"part\d+.html\"",raw_menu)
             if a:
