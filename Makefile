@@ -14,6 +14,10 @@ rm:
 	rm -rdf assets
 	
 
+wtest:
+	watchexec -rce py "source ~/.bash_profile && make test"
+
+
 test: rm
 	pytest -s -v  tests/
 
@@ -27,7 +31,7 @@ coverage:
 	pytest --cov=epub2html/ tests/
 
 main:
-	python3 -m epub2html eat -c 2
+	python3 -m epub2html "./a.epub" "./"
 
 install: uninstall
 	pip3 install . 
@@ -74,3 +78,5 @@ env:
 	python3 -m venv env
 	. env/bin/activate
 
+path:
+	echo $$PATH

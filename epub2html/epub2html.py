@@ -1,6 +1,7 @@
 #coding: utf-8
 import argparse
 from lxml import etree
+import xmltodict
 from pathlib import Path
 import re
 import zipfile
@@ -26,24 +27,27 @@ class Epub2Html():
         self.textdir = os.path.join(outputdir,only_name ,"text")
 
     
-    def parseDiv(self,dom,depth=0):
-        titles=  dom.xpath("./a/text()")
-        if len(titles)>0:
-            print(depth* "---",titles[0])
+    def _genMemuTree(self,node,depth=0):
+        for cc in node.findall("navPoint"):
+            name = cc.find("./navLabel/text")
+            link = cc.find("./content")
+            attrib = link.attrib["src"]
+            print("---"*depth,name.text.strip(),attrib)
+            
+        subs =node.findall("./navPoint")
+        if len(subs)>0:
+            for d in subs:
+                _genMemuTree(d,depth+1)
 
-        divs2=  dom.xpath("./div")
-        if len(divs2)>0:
-            for d in divs2:
-                self.parseDiv(d,depth+1)
-
-    def genMenuTree(self,filepath):
-        contents =Path(filepath).read_text()
-        contents = contents.encode('utf-8')
-        dom = etree.HTML(contents)
-        divs = dom.xpath("./body/div")
-        for d in divs:
-            self.parseDiv(d)
-
+    def genMemuTree(self,path):
+        contents = Path(path).read_text()
+        contents = contents
+        print(type(contents))
+        contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
+        root = etree.fromstring(contents)
+        print(root.tag)
+        for c in root.findall("./navMap"):
+            _genMemuTree(c,-1)
     def unzip(self):
 
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
