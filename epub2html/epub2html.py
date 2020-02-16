@@ -62,20 +62,31 @@ class Epub2Html():
         return self.indexHtmlLoc
 
     
-    def _genMemuTree(self,node,need_hash_names,ulist,depth=0):
+    def _genMemuTree(self,node,need_hash_names,menu_names,ulist,depth=0):
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
             attrib = link.attrib["src"]
+            
+            htmlpath  = re.findall(".+html",attrib)
+            if len(htmlpath)> 0:
+                n = htmlpath[0]
+                n = n.split("/")[-1]
+                if n not in menu_names:
+                    menu_names.append(n)
+
             # only page link, no hash jump
             if '#' not in attrib:
                 short_link = attrib.split('/')[-1]
-                attrib = "#"+self.hash(short_link)
                 need_hash_names.append(short_link)
-            else:
-                print("attrib",attrib)
 
-                attrib=re.sub(r"^.+html","index.html",attrib)
+                attrib = "#"+self.hash(short_link)
+                attrib="index.html"+attrib
+            else:
+                attrib=re.sub(r".+html","index.html",attrib)
+            print("attrib",attrib)
+
+            
 
             ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
 
@@ -83,7 +94,7 @@ class Epub2Html():
             if len(subs)>0:
                 for d in subs:
                     ulist.append("<ul>")
-                    self._genMemuTree(d,need_hash_names,ulist,depth+1)
+                    self._genMemuTree(d,need_hash_names,menu_names,ulist,depth+1)
                     ulist.append("</ul>")
 
     def genMemuTree(self,path):
@@ -94,11 +105,12 @@ class Epub2Html():
         root = etree.fromstring(contents)
         ulist =[]
         need_hash_names = []
+        menu_names = []
         ulist.append("<ul class=\"nav nav-sidebar \">")
         for c in root.findall("./navMap/navPoint"):
-            self._genMemuTree(c,need_hash_names,ulist,0)
+            self._genMemuTree(c,need_hash_names,menu_names,ulist,0)
         ulist.append("</ul>")
-        return "\n".join(ulist),need_hash_names
+        return "\n".join(ulist),need_hash_names,menu_names
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
@@ -106,10 +118,10 @@ class Epub2Html():
 
 
 
-    def genContent(self,hash_files):
+    def genContent(self,hash_files,menu_names):
         content_list = []
         # print("self.textdir",self.textdir)
-        for only_name in  self.traverse(self.textdir):
+        for only_name in  menu_names:
             if only_name in  ["part0000.html","part0001.html"]:
                 continue
 
@@ -157,31 +169,12 @@ class Epub2Html():
         tag = tag.decode("ascii")
         return tag
 
-    def genMenu(self,menuhtmlname):
-        raw_menu =Path(join(self.textdir,menuhtmlname)).read_text()
-        raw_menu = raw_menu.encode('utf-8')
-        raw_menu_dom = etree.HTML(raw_menu)
-        parts = raw_menu_dom.xpath("//body/*")
-        raw_menus = []
-        need_hash_names = []
-        for p in parts:
-            raw_menu = etree.tostring(p,method='html').decode('utf-8')
-            # only page link, no hash jump
-            a = re.search("\"part\d+.html\"",raw_menu)
-            if a:
-                need_hash_names.append(a.group())
-                raw_menu = re.sub("(part\d+.html)","#"+self.hash(a.group()),raw_menu)
-            else:
-                raw_menu=re.sub(r"part\w+\.html","",raw_menu)
-            
-            raw_menus.append(raw_menu) 
-        return "".join(raw_menus),need_hash_names
 
     
     def gen(self):
-        menu, hash_files= self.genMemuTree(os.path.join(self.outputdirSplashOnlyname,"toc.ncx"))
+        menu, hash_files, menu_names= self.genMemuTree(os.path.join(self.outputdirSplashOnlyname,"toc.ncx"))
 
-        full_content = self.genContent(hash_files)
+        full_content = self.genContent(hash_files,menu_names)
 
         self.template = self.template.replace("${menu}$",menu)
         self.template = self.template.replace("${content}$",full_content)
@@ -207,10 +200,10 @@ def main(args):
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    if sys.platform == 'darwin':
-        bashCommand = "open '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand,
-                              shell=True)
+    # if sys.platform == 'darwin':
+    #     bashCommand = "open '" + e.getIndexLoc() +"'"
+    #     subprocess.check_call(bashCommand,
+    #                           shell=True)
 
 
 
