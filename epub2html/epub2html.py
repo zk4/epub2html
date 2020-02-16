@@ -200,10 +200,10 @@ def main(args):
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    # if sys.platform == 'darwin':
-    #     bashCommand = "open '" + e.getIndexLoc() +"'"
-    #     subprocess.check_call(bashCommand,
-    #                           shell=True)
+    if sys.platform == 'darwin':
+        bashCommand = "open '" + e.getIndexLoc() +"'"
+        subprocess.check_call(bashCommand,
+                              shell=True)
 
 
 

@@ -42,7 +42,7 @@ uninstall: rm
 run:
 	python3 -m epub2html "/Users/zk/Downloads/Vim实用技巧（第2版）【三秋书屋www.d4j.cn】.epub" 	-o ./ 
 # run:
-# 	python3 -m epub2html "/Users/zk/Downloads/ePUBw.COM+-+别输在不会说话上.空.epub" 	-o ./ 
+# 	python3 -m epub2html "ePUBw.COM+-+我亲爱的厨神先生.时梧.百花洲文艺出版社.2018-6.epub" 	-o ./ 
 # # run:
 # 	python3 -m epub2html "/Users/zk/Downloads/隐性逻辑：教你快速切换思考方式-卡尔•诺顿.epub" -o ./
 	
