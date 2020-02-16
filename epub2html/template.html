@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Document</title>
+		<title>${title}$</title>
 
     <script type="text/javascript" src="./jquery.min.js"></script>
     <link
@@ -143,20 +143,16 @@
       // });
       // });
 
-      // $(document).ready(function() {
-      // });
-			window.addEventListener("beforeprint", function(event) {
-				$(".main").animate({ margin: "0 auto", marginLeft: 0 }, "linear");
-				$(".sidebar").hide()
+      $(document).ready(function() {
+				window.addEventListener("beforeprint", function(event) {
+					$(".main").animate({ margin: "0 auto", marginLeft: 0 }, "linear");
+					$(".sidebar").hide()
 
-			});
-			window.addEventListener("afterprint", function(event) { 
-				$(".sidebar").show()
-				$(".main").animate({ marginLeft: moveLeft + 15 }, "linear");
-			});
-
-
-
+				});
+				window.addEventListener("afterprint", function(event) { 
+					$(".sidebar").show()
+					$(".main").animate({ marginLeft: moveLeft + 15 }, "linear");
+				});
       //fixed定位 高度满屏
       $(".sidebar").height($(window).height());
 
@@ -217,6 +213,10 @@
       $(window).resize(function() {
         $("#list_left").height($(window).height());
       });
+      });
+
+
+
 
     </script>
   </body>

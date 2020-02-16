@@ -177,6 +177,7 @@ class Epub2Html():
         full_content = self.genContent(hash_files,menu_names)
 
         self.template = self.template.replace("${menu}$",menu)
+        self.template = self.template.replace("${title}$",self.only_name)
         self.template = self.template.replace("${content}$",full_content)
         Path(join(self.outputdir, self.only_name,"./index.html")).write_text(self.template)
         self.copyJs()
