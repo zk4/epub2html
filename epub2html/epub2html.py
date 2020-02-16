@@ -28,21 +28,27 @@ class Epub2Html():
         self.textdir = os.path.join(outputdir,only_name ,"text")
 
     
-    def _genMemuTree(self,node,ulist,depth=0):
+    def _genMemuTree(self,node,need_hash_names,ulist,depth=0):
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
             attrib = link.attrib["src"]
-            print(depth, name,attrib)
-            attrib=re.sub(r"text\/part\w+\.html","index.html",attrib)
+            # only page link, no hash jump
+            if '#' not in attrib:
+                short_link = attrib.split('/')[-1]
+                attrib = "#"+self.hash(short_link)
+                need_hash_names.append(short_link)
+                print(attrib)
+            else:
+                attrib=re.sub(r"text\/part\w+\.html","index.html",attrib)
+
             ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
-            
 
             subs =cc.findall("./navPoint")
             if len(subs)>0:
                 for d in subs:
                     ulist.append("<ul>")
-                    self._genMemuTree(d,ulist,depth+1)
+                    self._genMemuTree(d,need_hash_names,ulist,depth+1)
                     ulist.append("</ul>")
 
     def genMemuTree(self,path):
@@ -52,11 +58,12 @@ class Epub2Html():
         contents = contents.encode('utf-8')
         root = etree.fromstring(contents)
         ulist =[]
+        need_hash_names = []
         ulist.append("<ul class=\"nav nav-sidebar \">")
         for c in root.findall("./navMap/navPoint"):
-            self._genMemuTree(c,ulist,0)
+            self._genMemuTree(c,need_hash_names,ulist,0)
         ulist.append("</ul>")
-        return "\n".join(ulist),[]
+        return "\n".join(ulist),need_hash_names
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
@@ -69,17 +76,18 @@ class Epub2Html():
         for text in  self.traverse(self.textdir):
             if text in  ["part0000.html"]:
                 continue
-            print("handle: ",text)
             text = os.path.join(self.textdir,text)
             raw_menu = Path(text).read_text()
             raw_menu = raw_menu.encode('utf-8')
             raw_menu_dom = etree.HTML(raw_menu)
-            # parts = raw_menu_dom.xpath("//body")[0]
-            # for p in parts:
             raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
-            if text in hash_files:
-                print('----------------')
-                raw_menu = f"<a href=\"#{self.hash(text)}\"</a>{raw_menu}"
+
+            # ad slef generated hash
+            short_link = os.path.basename(text)
+            if short_link in hash_files:
+                anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
+                content_list.append(anhor)
+                # print(short_link,raw_menu)
 
             content_list.append(raw_menu)
 
@@ -110,9 +118,6 @@ class Epub2Html():
             a = re.search("\"part\d+.html\"",raw_menu)
             if a:
                 need_hash_names.append(a.group())
-                # tag = base64.b64encode(a.group().encode('ascii'))
-                # tag = tag.decode("ascii")
-
                 raw_menu = re.sub("(part\d+.html)","#"+self.hash(a.group()),raw_menu)
             else:
                 raw_menu=re.sub(r"part\w+\.html","",raw_menu)
@@ -124,10 +129,6 @@ class Epub2Html():
     def gen(self):
         self.unzip()
         menu, hash_files= self.genMemuTree(os.path.join(self.filedir,"toc.ncx"))
-        # menu2, hash_files2= self.genMenu("part0001.html")
-
-        # menu =menu + menu2
-        # hash_files =hash_files + hash_files2
 
         full_content = self.genContent(hash_files)
 
