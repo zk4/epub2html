@@ -38,7 +38,6 @@ class Epub2Html():
                 short_link = attrib.split('/')[-1]
                 attrib = "#"+self.hash(short_link)
                 need_hash_names.append(short_link)
-                print(attrib)
             else:
                 attrib=re.sub(r"text\/part\w+\.html","index.html",attrib)
 
@@ -74,17 +73,20 @@ class Epub2Html():
     def genContent(self,hash_files):
         content_list = []
         print("self.textdir",self.textdir)
-        for text in  self.traverse(self.textdir):
-            if text in  ["part0000.html"]:
+        for only_name in  self.traverse(self.textdir):
+            if only_name in  ["part0000.html"]:
                 continue
-            text = os.path.join(self.textdir,text)
-            raw_content = Path(text).read_text()
+            full_path = os.path.join(self.textdir,only_name)
+            raw_content = Path(full_path).read_text()
             raw_content = raw_content.encode('utf-8')
             raw_content_dom = etree.HTML(raw_content)
             raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            raw_content = self.washBody(raw_content)
+            if only_name in  ["part0009_split_000.html"]:
+                print(raw_content)
 
             # ad slef generated hash
-            short_link = os.path.basename(text)
+            short_link = os.path.basename(full_path)
             if short_link in hash_files:
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
@@ -93,8 +95,16 @@ class Epub2Html():
             content_list.append(raw_content)
 
         full_content = "".join(content_list)
-        full_content=re.sub(r"\.\.\/images","./images",full_content)
+        full_content = self.washImageLink(full_content)
         return full_content
+
+    def washBody(self,sub_content):
+        tmp = sub_content.replace("<body","<div")
+        tmp = tmp.replace("</body>","</div>")
+        return tmp
+
+    def washImageLink(self,full_content):
+        return re.sub(r"\.\.\/images","./images",full_content)
         
     def traverse(self,rootdir):
         for cdirname, _, filenames in os.walk(rootdir):
