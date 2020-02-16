@@ -1,6 +1,5 @@
 #coding: utf-8
 import xml.etree.ElementTree as etree
-from epub2html import DisableXmlNamespaces
 from pathlib import Path
 import re
 

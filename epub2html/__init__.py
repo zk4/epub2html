@@ -3,9 +3,4 @@ from .epub2html import (entry_point,
                      Epub2Html,
                      createParse)
 
-from .dicardXmlNS import (
-        DisableXmlNamespaces
-        )
-
-
-__all__ = ['entry_point','createParse', 'main','Epub2Html', 'DisableXmlNamespaces']
+__all__ = ['entry_point','createParse', 'main','Epub2Html']
