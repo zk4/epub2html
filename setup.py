@@ -1,7 +1,19 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
+from pathlib import Path
 
-VERSION = (2, 2, 4)
+
+
+versionfile = Path("./version")
+version = versionfile.read_text()
+[mainv,modulev,minorv] = version.split(".")
+minorv=1+int(minorv)
+
+newversion =f"{mainv}.{modulev}.{minorv}"
+versionfile.write_text(newversion)
+print(mainv,modulev,minorv)
+
+VERSION = (int(mainv), int(modulev), int(minorv))
 __version__ = '.'.join(map(str, VERSION[0:3]))
 __description__ = '''this is a description'''
 __author__ = 'zk'

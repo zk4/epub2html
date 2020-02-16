@@ -73,6 +73,7 @@ freeze-global:
 	#  pip3 will find all the module not belong to standard  library
 	pip3 freeze > requirements.txt
 
+	
 
 env-rm:
 	rm -rdf env
