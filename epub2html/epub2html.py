@@ -76,7 +76,7 @@ class Epub2Html():
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
-            zip_ref.extractall(os.path.join(self.outputdirSplashOnlyname,f"{self.only_name}"))
+            zip_ref.extractall(self.outputdirSplashOnlyname)
 
 
 

@@ -36,11 +36,11 @@ main:
 install: uninstall
 	pip3 install . 
 
-uninstall:
+uninstall: rm
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html "/Users/zk/Downloads/世界上最简单的会计书  达雷尔·穆利斯,朱迪丝·奥洛夫.epub"
+	python3 -m epub2html "/Users/zk/Downloads/隐性逻辑：教你快速切换思考方式-卡尔•诺顿.epub"
 	
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"
