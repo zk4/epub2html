@@ -31,9 +31,32 @@ class Epub2Html():
         self.absfiledir = os.path.abspath(self.filedir)
         self.outputdir =outputdir
         self.outputdirSplashOnlyname =os.path.join(outputdir,only_name)
-        self.textdir = os.path.join(self.outputdirSplashOnlyname ,"text")
+
+        self.unzip()
+        self.imagePath, self.textPath  = self.readOpf()
+        self.textdir = os.path.join(self.outputdirSplashOnlyname ,self.textPath)
         self.indexHtmlLoc =  os.path.join(self.outputdirSplashOnlyname,"index.html")
 
+    def readOpf(self):
+        opfpath= (os.path.join(self.outputdirSplashOnlyname,"content.opf"))
+        imagePath = ""
+        textPath = ""
+        contents = Path(opfpath).read_text()
+        contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
+        contents = contents.encode('utf-8')
+        root = etree.fromstring(contents)
+        for item in root.findall(".//manifest/"):
+            href = item.attrib["href"]
+            if imagePath == "" and re.search('image', href, re.IGNORECASE):
+                imagePath = os.path.dirname(href)
+
+            if textPath == "" and re.search('text', href, re.IGNORECASE):
+                textPath = os.path.dirname(href)
+
+            if imagePath != "" and textPath != "":
+                break
+
+        return imagePath, textPath
 
     def getIndexLoc(self):
         return self.indexHtmlLoc
@@ -50,7 +73,9 @@ class Epub2Html():
                 attrib = "#"+self.hash(short_link)
                 need_hash_names.append(short_link)
             else:
-                attrib=re.sub(r"text\/part\w+\.html","index.html",attrib)
+                print("attrib",attrib)
+
+                attrib=re.sub(r"^.+html","index.html",attrib)
 
             ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
 
@@ -64,7 +89,6 @@ class Epub2Html():
     def genMemuTree(self,path):
         print("path",path)
         contents = Path(path).read_text()
-        contents = contents
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
         root = etree.fromstring(contents)
@@ -121,7 +145,7 @@ class Epub2Html():
         return tmp
 
     def washImageLink(self,full_content):
-        return re.sub(r"\.\.\/images","./images",full_content)
+        return re.sub(r"\.\.\/images","./"+self.imagePath,full_content)
         
     def traverse(self,rootdir):
         for cdirname, _, filenames in os.walk(rootdir):
@@ -155,7 +179,6 @@ class Epub2Html():
 
     
     def gen(self):
-        self.unzip()
         menu, hash_files= self.genMemuTree(os.path.join(self.outputdirSplashOnlyname,"toc.ncx"))
 
         full_content = self.genContent(hash_files)

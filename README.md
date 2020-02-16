@@ -30,6 +30,7 @@ link the file with this app, You are good to go.
 
 
 # todo 
+- read as epub standard
 - show/hide button does not locate in the middle of sideb if menu too long
 - generate decent pdf  with menu
 
