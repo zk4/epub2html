@@ -28,11 +28,38 @@ def genMemuTree(path):
         yield from _genMemuTree(c,0)
 
 
+# <ul class="nav nav-sidebar noSelect">
+# <li id="__origin" url="4,5,6"><a>item2</a></li>
+# <ul>
+#     <li id="__origin" url="4,5,6"><a>item2</a></li>
+#     <li id="__origin" url="4,5,6"><a>item2</a></li>
+#     <li id="__origin" url="4,5,6"><a>item2</a></li>
+# </ul>
+# </ul>
+
 def test_xml():
+    li ="""<li><a href="$hash$">$name$</a></li>"""
+    sub=f"""<ul>
+            $li$ 
+    </ul>"""
+
     full = []
+
+    od = -99
+
     for d,n,s in genMemuTree("./b/toc.ncx"):
+        # same level 
+        if d == od:
+            pass
+        else:
+            pass
+
+
+
+            
+
+
         full.append("-"*d+n+"\n")
-        
 
     menu = Path("./new_menu.txt")
     menu.write_text("".join(full))

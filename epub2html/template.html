@@ -95,10 +95,18 @@ html body {
 <body>
 <div class="sidebar" id="list_left">
     <ul class="nav nav-sidebar noSelect">
-        <li id="__origin" url="4,5,6"><a>item2</a></li>
-			<ul >
-					<li id="__origin" url="4,5,6"><a>item2</a></li>
-			</ul>
+        <li ><a>item2</a></li>
+				<ul>
+						<li ><a>item2</a></li>
+						<li ><a>item2</a></li>
+						<li ><a>item2</a></li>
+				</ul>
+        <li ><a>item2</a></li>
+				<ul>
+						<li ><a>item2</a></li>
+						<li ><a>item2</a></li>
+						<li ><a>item2</a></li>
+				</ul>
     </ul>
     <div class="closeMenu">
         <span class="glyphicon glyphicon-triangle-left"></span>
@@ -113,6 +121,12 @@ html body {
 </div>
 <script type="text/javascript">
 //控制item样式
+	$(document).ready(function() {
+    $('li').click(function(e) {
+        e.stopPropagation();
+        $(this).next('ul').slideToggle(100);
+    });
+});
 
     //fixed定位 高度满屏
     $(".sidebar").height($(window).height());
