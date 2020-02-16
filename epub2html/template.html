@@ -143,6 +143,20 @@
       // });
       // });
 
+      // $(document).ready(function() {
+      // });
+			window.addEventListener("beforeprint", function(event) {
+				$(".main").animate({ margin: "0 auto", marginLeft: 0 }, "linear");
+				$(".sidebar").hide()
+
+			});
+			window.addEventListener("afterprint", function(event) { 
+				$(".sidebar").show()
+				$(".main").animate({ marginLeft: moveLeft + 15 }, "linear");
+			});
+
+
+
       //fixed定位 高度满屏
       $(".sidebar").height($(window).height());
 
@@ -203,6 +217,7 @@
       $(window).resize(function() {
         $("#list_left").height($(window).height());
       });
+
     </script>
   </body>
 </html>
