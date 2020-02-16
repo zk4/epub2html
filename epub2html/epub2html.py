@@ -70,6 +70,7 @@ class Epub2Html():
             zip_ref.extractall(os.path.join(self.outputdir,f"{self.only_name}"))
 
 
+
     def genContent(self,hash_files):
         content_list = []
         print("self.textdir",self.textdir)
