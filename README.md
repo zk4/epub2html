@@ -12,12 +12,20 @@ So, the basic idea is converting epub to a static html. That's it.
 # usage 
 ``` bash
 pip install epub2html
-epub2html abc.epub  
+epub abc.epub  
 
 ```
 will open your converted epub html file in browser .
 
 
+# open with double click like normal file (mac)
+
+use automator, generate the app
+![](https://github.com/zk4/epub2html/blob/master/demo2.jpg?raw=true)
+then link the file with this app
+
+
 # todo 
 - show/hide button does not locate in the middle of sideb if menu too long
 - generate decent pdf  with menu
+

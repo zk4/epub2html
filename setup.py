@@ -14,7 +14,7 @@ if __name__ == '__main__':
     setup(
         # used in pip install and uninstall 
         # pip install modulename
-        name='epub2html',
+        name='epub',
         version=__version__,
         author=__author__,
         author_email=__author_email__,
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         install_requires=open('requirements.txt', 'r').read().strip().split(),
         entry_points={
             'console_scripts': [
-                'epub2html = epub2html:entry_point'
+                'epub = epub2html:entry_point'
             ]
         },
         classifiers=[

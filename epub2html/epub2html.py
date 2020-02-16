@@ -6,6 +6,7 @@ import xmltodict
 from pathlib import Path
 import re
 import zipfile
+import subprocess
 import os
 import sys
 import html
@@ -79,7 +80,7 @@ class Epub2Html():
 
     def genContent(self,hash_files):
         content_list = []
-        print("self.textdir",self.textdir)
+        # print("self.textdir",self.textdir)
         for only_name in  self.traverse(self.textdir):
             if only_name in  ["part0000.html","part0001.html"]:
                 continue
@@ -163,7 +164,7 @@ class Epub2Html():
     def copyJs(self):
         import shutil
         dest = join(self.outputdir, self.only_name,"./jquery.min.js")
-        print("dest:",dest)
+        # print("dest:",dest)
         script_dir = os.path.dirname(os.path.abspath(__file__))
         jquery_path = os.path.join(script_dir,"jquery.min.js")
         shutil.copy(jquery_path,dest)
@@ -177,10 +178,9 @@ def main(args):
     outputdir ="./" #os.path.abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
-    # e.gen()
+    e.gen()
+    print("converted! "+ e.getIndexLoc())
     bashCommand = "open '" + e.getIndexLoc() +"'"
-    import subprocess
-
     subprocess.check_call(bashCommand,
                           shell=True)
 
