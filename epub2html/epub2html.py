@@ -31,13 +31,14 @@ class Epub2Html():
         for cc in node.findall("navPoint"):
             name = cc.find("./navLabel/text")
             link = cc.find("./content")
-            attrib = link.attrib["src"]
-            print("---"*depth,name.text.strip(),attrib)
+            src = link.attrib["src"]
+            print("---"*depth,name.text.strip(),src)
+            yield depth,name.text.strip(),src
             
         subs =node.findall("./navPoint")
         if len(subs)>0:
             for d in subs:
-                _genMemuTree(d,depth+1)
+                yield from self._genMemuTree(d,depth+1)
 
     def genMemuTree(self,path):
         contents = Path(path).read_text()
@@ -47,7 +48,7 @@ class Epub2Html():
         root = etree.fromstring(contents)
         print(root.tag)
         for c in root.findall("./navMap"):
-            _genMemuTree(c,-1)
+            yield from self._genMemuTree(c,-1)
     def unzip(self):
 
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
