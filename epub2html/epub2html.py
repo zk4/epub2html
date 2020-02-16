@@ -59,6 +59,7 @@ class Epub2Html():
                     ulist.append("</ul>")
 
     def genMemuTree(self,path):
+        print("path",path)
         contents = Path(path).read_text()
         contents = contents
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
@@ -175,7 +176,8 @@ def main(args):
     if filepath[0]!="." and filepath[0]!="/":
         filepath= "./"+filepath
     filepath = os.path.abspath(filepath)
-    outputdir ="./" #os.path.abspath(args.outputdir)
+    print(filepath)
+    outputdir =os.path.dirname(filepath) #os.path.abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
     e.gen()

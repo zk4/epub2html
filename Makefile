@@ -40,7 +40,7 @@ uninstall:
 	pip3 uninstall epub
 
 run:
-	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
+	python3 -m epub2html "/Users/zk/Downloads/世界上最简单的会计书  达雷尔·穆利斯,朱迪丝·奥洛夫.epub"
 	
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"
