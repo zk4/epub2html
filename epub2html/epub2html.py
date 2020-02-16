@@ -8,7 +8,9 @@ import re
 import zipfile
 import subprocess
 import os
+import tempfile
 import sys
+import shutil
 import html
 from os.path import dirname,basename,join
 import html.parser as htmlparser
@@ -164,12 +166,9 @@ class Epub2Html():
         self.copyJs()
 
     def copyJs(self):
-        import shutil
-        dest = join(self.outputdir, self.only_name,"./jquery.min.js")
-        # print("dest:",dest)
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        jquery_path = os.path.join(script_dir,"jquery.min.js")
-        shutil.copy(jquery_path,dest)
+        shutil.copy(os.path.join(script_dir,"jquery.min.js"),self.outputdirSplashOnlyname)
+        shutil.copy(os.path.join(script_dir,"leader-line.min.js"),self.outputdirSplashOnlyname)
 
 
 def main(args):
@@ -177,9 +176,10 @@ def main(args):
     if filepath[0]!="." and filepath[0]!="/":
         filepath= "./"+filepath
     filepath = os.path.abspath(filepath)
-    print(filepath)
-    import tempfile
-    outputdir =tempfile.gettempdir() #os.path.abspath(args.outputdir)
+
+    outputdir =tempfile.gettempdir()
+    if args.outputdir:
+        outputdir = os.path.abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
     e.gen()
@@ -200,5 +200,6 @@ def entry_point():
 def createParse():
     parser = argparse.ArgumentParser( formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="")
     parser.add_argument("filepath",  help="filepath" )
+    parser.add_argument("-o",'--outputdir', type=str,  required=False, help='output dir')
     # parser.add_argument("outputdir",  help="outputdir" )
     return parser

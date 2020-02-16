@@ -28,7 +28,7 @@ if __name__ == '__main__':
         zip_safe=False,
         packages=find_packages(exclude=['tests', 'tests.*']),
         package_data={
-            'epub2html': ['template.html','jquery.min.js']
+            'epub2html': ['template.html','jquery.min.js','leader-line.min.js']
             },
         install_requires=open('requirements.txt', 'r').read().strip().split(),
         entry_points={
