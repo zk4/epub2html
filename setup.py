@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-VERSION = (2, 2, 1)
+VERSION = (2, 2, 2)
 __version__ = '.'.join(map(str, VERSION[0:3]))
 __description__ = '''this is a description'''
 __author__ = 'zk'
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     setup(
         # used in pip install and uninstall 
         # pip install modulename
-        name='epub',
+        name='epub2html',
         version=__version__,
         author=__author__,
         author_email=__author_email__,
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         install_requires=open('requirements.txt', 'r').read().strip().split(),
         entry_points={
             'console_scripts': [
-                'epub = epub2html:entry_point'
+                'epub2html = epub2html:entry_point'
             ]
         },
         classifiers=[

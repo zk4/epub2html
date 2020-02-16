@@ -37,7 +37,7 @@ install: uninstall
 	pip3 install . 
 
 uninstall:
-	pip3 uninstall epub
+	pip3 uninstall epub2html
 
 run:
 	python3 -m epub2html "/Users/zk/Downloads/世界上最简单的会计书  达雷尔·穆利斯,朱迪丝·奥洛夫.epub"

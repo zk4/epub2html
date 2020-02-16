@@ -12,7 +12,7 @@ So, the basic idea is converting epub to a static html. That's it.
 # usage 
 ``` bash
 pip install epub2html
-epub abc.epub  
+epub2html abc.epub  
 
 ```
 will open your converted epub html file in browser .
@@ -20,9 +20,13 @@ will open your converted epub html file in browser .
 
 # open with double click like normal file (mac)
 
-use automator, generate the app
-![](https://github.com/zk4/epub2html/blob/master/demo2.jpg?raw=true)
-then link the file with this app
+use automator, generate the app, create a `Run shell script` module
+``` 
+source ~/.bash_profile
+epub2html "$1"
+```
+save it, 
+link the file with this app, You are good to go.
 
 
 # todo 
