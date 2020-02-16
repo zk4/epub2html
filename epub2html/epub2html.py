@@ -28,8 +28,9 @@ class Epub2Html():
         self.filedir = join(dirname(self.epubpath),only_name)
         self.absfiledir = os.path.abspath(self.filedir)
         self.outputdir =outputdir
-        self.textdir = os.path.join(outputdir,only_name ,"text")
-        self.indexHtmlLoc =  os.path.join(outputdir,only_name ,"index.html")
+        self.outputdirSplashOnlyname =os.path.join(outputdir,only_name)
+        self.textdir = os.path.join(self.outputdirSplashOnlyname ,"text")
+        self.indexHtmlLoc =  os.path.join(self.outputdirSplashOnlyname,"index.html")
 
 
     def getIndexLoc(self):
@@ -75,7 +76,7 @@ class Epub2Html():
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
-            zip_ref.extractall(os.path.join(self.outputdir,f"{self.only_name}"))
+            zip_ref.extractall(os.path.join(self.outputdirSplashOnlyname,f"{self.only_name}"))
 
 
 
@@ -153,7 +154,7 @@ class Epub2Html():
     
     def gen(self):
         self.unzip()
-        menu, hash_files= self.genMemuTree(os.path.join(self.filedir,"toc.ncx"))
+        menu, hash_files= self.genMemuTree(os.path.join(self.outputdirSplashOnlyname,"toc.ncx"))
 
         full_content = self.genContent(hash_files)
 
@@ -177,14 +178,17 @@ def main(args):
         filepath= "./"+filepath
     filepath = os.path.abspath(filepath)
     print(filepath)
-    outputdir =os.path.dirname(filepath) #os.path.abspath(args.outputdir)
+    import tempfile
+    outputdir =tempfile.gettempdir() #os.path.abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    bashCommand = "open '" + e.getIndexLoc() +"'"
-    subprocess.check_call(bashCommand,
-                          shell=True)
+    if sys.platform == 'darwin':
+        bashCommand = "open '" + e.getIndexLoc() +"'"
+        subprocess.check_call(bashCommand,
+                              shell=True)
+
 
 
 def entry_point():
