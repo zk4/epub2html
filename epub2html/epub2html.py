@@ -28,17 +28,17 @@ class Epub2Html():
 
     
     def _genMemuTree(self,node,depth=0):
-        for cc in node.findall("navPoint"):
+        for cc in node.findall("."):
             name = cc.find("./navLabel/text")
             link = cc.find("./content")
-            src = link.attrib["src"]
-            print("---"*depth,name.text.strip(),src)
-            yield depth,name.text.strip(),src
+            attrib = link.attrib["src"]
+            print(depth, name.text.strip(),attrib)
+            yield depth, name.text.strip(),attrib
             
-        subs =node.findall("./navPoint")
-        if len(subs)>0:
-            for d in subs:
-                yield from self._genMemuTree(d,depth+1)
+            subs =cc.findall("./navPoint")
+            if len(subs)>0:
+                for d in subs:
+                    yield from self._genMemuTree(d,depth+1)
 
     def genMemuTree(self,path):
         contents = Path(path).read_text()
@@ -47,10 +47,10 @@ class Epub2Html():
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         root = etree.fromstring(contents)
         print(root.tag)
-        for c in root.findall("./navMap"):
-            yield from self._genMemuTree(c,-1)
-    def unzip(self):
+        for c in root.findall("./navMap/navPoint"):
+            yield from self._genMemuTree(c,0)
 
+    def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(os.path.join(self.outputdir,f"{self.only_name}"))
 
