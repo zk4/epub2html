@@ -40,7 +40,7 @@ uninstall:
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html  "./a.epub" "./"
+	python3 -m epub2html  "./b.epub" "./"
 	
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"

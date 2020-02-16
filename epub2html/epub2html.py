@@ -10,7 +10,6 @@ import os
 import sys
 import html
 from os.path import dirname,basename,join
-from urllib.parse import unquote
 import html.parser as htmlparser
 parser = htmlparser.HTMLParser()
 
@@ -89,8 +88,9 @@ class Epub2Html():
             raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
             raw_content = self.washBody(raw_content)
 
-            if only_name in  ["part0004_split_001.html"]:
-                print(parser.unescape(raw_content))
+            # debug
+            # if only_name in  ["part0004_split_001.html"]:
+            #     print(parser.unescape(raw_content))
 
             # ad slef generated hash
             short_link = os.path.basename(full_path)
@@ -98,7 +98,8 @@ class Epub2Html():
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
 
-            content_list.append(parser.unescape(raw_content))
+            # content_list.append(parser.unescape(raw_content))
+            content_list.append(raw_content)
 
         full_content = "".join(content_list)
         full_content = self.washImageLink(full_content)
