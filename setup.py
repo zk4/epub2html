@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-VERSION = (2, 1, 0)
+VERSION = (2, 2, 1)
 __version__ = '.'.join(map(str, VERSION[0:3]))
 __description__ = '''this is a description'''
 __author__ = 'zk'
-__author_email__ = 'mailsforabhinav@gmail.com'
-__homepage__ = 'https://github.com/abhinavsingh/proxy.py'
+__author_email__ = 'liuzq7@gmail.com'
+__homepage__ = 'https://github.com/zk4/epub2html'
 __download_url__ = '%s/archive/master.zip' % __homepage__
 __license__ = 'BSD'
 
@@ -28,7 +28,6 @@ if __name__ == '__main__':
         zip_safe=False,
         packages=find_packages(exclude=['tests', 'tests.*']),
         package_data={
-            'epub2html.logx': ['logging.yaml'],
             'epub2html': ['template.html','jquery.min.js']
             },
         install_requires=open('requirements.txt', 'r').read().strip().split(),
