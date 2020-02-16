@@ -77,19 +77,19 @@ class Epub2Html():
             if text in  ["part0000.html"]:
                 continue
             text = os.path.join(self.textdir,text)
-            raw_menu = Path(text).read_text()
-            raw_menu = raw_menu.encode('utf-8')
-            raw_menu_dom = etree.HTML(raw_menu)
-            raw_menu = etree.tostring(raw_menu_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
+            raw_content = Path(text).read_text()
+            raw_content = raw_content.encode('utf-8')
+            raw_content_dom = etree.HTML(raw_content)
+            raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],pretty_print=True).decode('utf-8')
 
             # ad slef generated hash
             short_link = os.path.basename(text)
             if short_link in hash_files:
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
-                # print(short_link,raw_menu)
+                # print(short_link,raw_content)
 
-            content_list.append(raw_menu)
+            content_list.append(raw_content)
 
         full_content = "".join(content_list)
         full_content=re.sub(r"\.\.\/images","./images",full_content)
