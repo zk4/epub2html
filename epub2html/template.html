@@ -111,6 +111,10 @@
         background-color: #428bca;
         color: #fff;
       }
+			.lightli {
+
+        color: red;
+			}
       .index {
         /* position: relative; */
         /* top: 45%; */
@@ -124,6 +128,10 @@
   <body>
     <div class="sidebar" id="list_left">
       ${menu}$
+			<ul>
+				<li><a href="#hello">hello</a></li>
+				<li><a href="#world">world</a></li>
+			</ul>
       <div class="closeMenu">
         <span class="glyphicon glyphicon-triangle-left"></span>
         <span class="glyphicon glyphicon-triangle-right"></span>
@@ -144,6 +152,49 @@
       // });
 
       $(document).ready(function() {
+
+				 function isOnScreen(elem) {
+					// if the element doesn't exist, abort
+					if( elem.length == 0 ) {
+						return;
+					}
+					var $window = jQuery(window)
+					var viewport_top = $window.scrollTop()
+					var viewport_height = $window.height()
+					var viewport_bottom = viewport_top + viewport_height
+					var $elem = jQuery(elem)
+					var top = $elem.offset().top
+					var height = $elem.height()
+					var bottom = top + height
+
+					return (top >= viewport_top && top < viewport_bottom) ||
+					(bottom > viewport_top && bottom <= viewport_bottom) ||
+					(height > viewport_height && top <= viewport_top && bottom >= viewport_bottom)
+				}
+				
+				var getIdArray = function() {
+						return document.querySelectorAll('*[id]')
+					};
+				<!-- var ars =getIdArray(); -->
+				<!-- var previouslightmenu=null; -->
+				<!-- window.addEventListener('scroll', function(e) { -->
+				<!-- 	ars.forEach(function(a){ -->
+				<!-- 		if("list_left"!=a.id && isOnScreen( $(document.getElementById(a.id)) ) ) { --> 
+				<!-- 			var currentlightmenu = $('a[href*="' + a.id + '"]') -->
+				<!-- 				currentlightmenu.addClass("lightli"); -->
+
+				<!-- 			console.log( a.id+'  The specified container is in view.' + currentlightmenu.attr('href') ); -->
+				<!-- 			if (previouslightmenu && previouslightmenu.attr('href') != currentlightmenu.attr('href')){ -->
+				<!-- 				  console.log("remove") -->
+				<!-- 					previouslightmenu.removeClass("lightli") -->
+				<!-- 				} -->
+				<!-- 				previouslightmenu= currentlightmenu; -->
+
+				<!-- 		} -->
+
+				<!-- 	}) -->
+				<!-- }) -->
+
 				window.addEventListener("beforeprint", function(event) {
 					$(".main").animate({ margin: "0 auto", marginLeft: 0 }, "linear");
 					$(".sidebar").hide()
