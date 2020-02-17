@@ -81,9 +81,9 @@ class Epub2Html():
                 need_hash_names.append(short_link)
 
                 attrib = "#"+self.hash(short_link)
-                attrib="index.html"+attrib
+                # attrib="index.html"+attrib
             else:
-                attrib=re.sub(r".+html","index.html",attrib)
+                attrib=re.sub(r".+html","",attrib)
             print("attrib",attrib)
 
             
@@ -167,7 +167,7 @@ class Epub2Html():
         import base64
         tag = base64.b64encode(s.encode('ascii'))
         tag = tag.decode("ascii")
-        return tag
+        return tag.rstrip('=')
 
 
     
