@@ -20,41 +20,37 @@ class Epub2Html():
     def __init__(self,epubpath,outputdir):
         self.epubpath = epubpath 
 
-        script_dir = os.path.dirname(os.path.abspath(__file__))
+        script_dir    = os.path.dirname(os.path.abspath(__file__))
         template_path = os.path.join(script_dir,"template.html")
 
-        self.template =Path(template_path).read_text()
-        (only_name,_)=  os.path.splitext(basename(self.epubpath))
-        self.only_name = only_name
-
-        self.filedir = join(dirname(self.epubpath),only_name)
-        self.absfiledir = os.path.abspath(self.filedir)
-        self.outputdir =outputdir
-        self.outputdirSplashOnlyname =os.path.join(outputdir,only_name)
-        print("self.outputdirSplashOnlyname",self.outputdirSplashOnlyname)
+        self.template              = Path(template_path).read_text()
+        (epub_name_without_ext,_)  = os.path.splitext(basename(self.epubpath))
+        self.epub_name_without_ext = epub_name_without_ext
+        self.outputdir             = outputdir
+        self.root_a_path           = os.path.join(outputdir,epub_name_without_ext)
 
         self.unzip()
 
-        relative_opf_path = self.readMeta()
-        self.indexHtmlLoc =  os.path.join(self.outputdirSplashOnlyname,"index.html")
-        self.opfpath= join(self.outputdirSplashOnlyname,relative_opf_path)
-        self.opfdir= dirname(join(self.outputdirSplashOnlyname,relative_opf_path))
+        opf_r_root_path   = self.get_opf_r_root_path()
+        self.index_a_path = os.path.join(self.root_a_path,"index.html")
+        self.opf_a_path   = join(self.root_a_path,opf_r_root_path)
+        self.opf_a_dir    = dirname(join(self.root_a_path,opf_r_root_path))
 
-        self.imagePath, self.textPath ,self.ncxPath = self.readOpf()
+        self.image_r_opf_path, self.text_r_opf_path ,self.ncx_r_opf_path = self.paths_from_opf()
 
-        self.textdir = os.path.join(self.opfdir, self.textPath)
+        self.text_a_path = os.path.join(self.opf_a_dir, self.text_r_opf_path)
 
-        print("self.imagePath:",
-                self.imagePath,
-                "\nself.textPath:",
-                self.textPath,
-                "\nself.ncxPath:",
-                self.ncxPath) 
+        print("self.image_r_opf_path:",
+                self.image_r_opf_path,
+                "\nself.text_r_opf_path:",
+                self.text_r_opf_path,
+                "\nself.ncx_r_opf_path:",
+                self.ncx_r_opf_path) 
 
 
-    def readMeta(self):
-        met_inf= (os.path.join(self.outputdirSplashOnlyname,"META-INF/container.xml"))
-        contents = Path(met_inf).read_text()
+    def get_opf_r_root_path(self):
+        meta_a_path= (os.path.join(self.root_a_path,"META-INF/container.xml"))
+        contents = Path(meta_a_path).read_text()
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         
         contents = contents.encode('utf-8')
@@ -62,35 +58,42 @@ class Epub2Html():
         for item in root.findall(".//rootfiles/"):
             return item.attrib["full-path"]
 
-    def readOpf(self):
+    def read_xml(self,path):
+        pass
+
+    def paths_from_opf(self):
         
-        opfpath= self.opfpath
-        imagePath = None
-        textPath = None
-        ncxPath = None
-        contents = Path(opfpath).read_text()
+        opf_a_path= self.opf_a_path
+        image_r_opf_path = None
+        text_r_opf_path = None
+        ncx_path_relative_to_opf = None
+        css_path_relative_to_opf = None
+        contents = Path(opf_a_path).read_text()
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
         root = etree.fromstring(contents)
         for item in root.findall(".//manifest/"):
             href = item.attrib["href"]
-            if imagePath == None and re.search('image', href, re.IGNORECASE):
-                imagePath = os.path.dirname(href)
+            if image_r_opf_path == None and re.search('image', href, re.IGNORECASE):
+                image_r_opf_path = os.path.dirname(href)
 
-            if textPath == None and re.search('text', href, re.IGNORECASE):
-                textPath = os.path.dirname(href)
+            if text_r_opf_path == None and re.search('text', href, re.IGNORECASE):
+                text_r_opf_path = os.path.dirname(href)
 
-            if item.attrib["id"] =="ncx":
-                ncxPath = href
+            if "ncx" in item.attrib["media-type"]:
+                ncx_path_relative_to_opf = href
+
+            if "css" in item.attrib["media-type"]:
+                css_path_relative_to_opf = href
 
 
-            if imagePath != None and textPath != None and ncxPath != None:
+            if image_r_opf_path != None and text_r_opf_path != None and ncx_path_relative_to_opf != None:
                 break
 
-        return imagePath, textPath, ncxPath
+        return image_r_opf_path, text_r_opf_path, ncx_path_relative_to_opf
 
     def getIndexLoc(self):
-        return self.indexHtmlLoc
+        return self.index_a_path
 
     
     def _genMemuTree(self,node,need_hash_names,menu_names,ulist,depth=0): 
@@ -110,9 +113,7 @@ class Epub2Html():
             if '#' not in attrib:
                 short_link = attrib.split('/')[-1]
                 need_hash_names.append(short_link)
-
                 attrib = "#"+self.hash(short_link)
-                # attrib="index.html"+attrib
             else:
                 attrib=re.sub(r".+html","",attrib)
             print("attrib",attrib)
@@ -145,29 +146,23 @@ class Epub2Html():
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
-            zip_ref.extractall(self.outputdirSplashOnlyname)
+            zip_ref.extractall(self.root_a_path)
 
 
 
     def genContent(self,hash_files,menu_names):
         content_list = []
-        # print("self.textdir",self.textdir)
-        for only_name in  menu_names:
-            if only_name in  ["part0000.html","part0001.html"]:
+        for epub_name_without_ext in  menu_names:
+            if epub_name_without_ext in  ["part0000.html","part0001.html"]:
                 continue
 
-            full_path = os.path.join(self.textdir,only_name)
+            full_path = os.path.join(self.text_a_path,epub_name_without_ext)
             raw_content = Path(full_path).read_text()
-
 
             raw_content = raw_content.encode('utf-8')
             raw_content_dom = etree.HTML(raw_content)
             raw_content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
             raw_content = self.washBody(raw_content)
-
-            # debug
-            # if only_name in  ["part0004_split_001.html"]:
-            #     print(parser.unescape(raw_content))
 
             # ad slef generated hash
             short_link = os.path.basename(full_path)
@@ -175,7 +170,6 @@ class Epub2Html():
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
 
-            # content_list.append(parser.unescape(raw_content))
             content_list.append(raw_content)
 
         full_content = "".join(content_list)
@@ -188,7 +182,7 @@ class Epub2Html():
         return tmp
 
     def washImageLink(self,full_content):
-        return re.sub(r"\.\.\/images","./"+self.imagePath,full_content)
+        return re.sub(r"\.\.\/images","./"+self.image_r_opf_path,full_content)
         
     def traverse(self,rootdir):
         for cdirname, _, filenames in os.walk(rootdir):
@@ -196,27 +190,27 @@ class Epub2Html():
                 return filenames 
     def hash(self, s):
         import base64
-        tag = base64.b64encode(s.encode('ascii'))
-        tag = tag.decode("ascii")
-        return tag.rstrip('=')
+        tag                 = base64.b64encode(s.encode('ascii'))
+        tag                 = tag.decode("ascii")
+        return tag.rstrip(' = ')
 
 
     
     def gen(self):
-        menu, hash_files, menu_names= self.genMemuTree(os.path.join(self.opfdir,"toc.ncx"))
+        menu, hash_files, menu_names = self.genMemuTree(os.path.join(self.opf_a_dir,"toc.ncx"))
 
         full_content = self.genContent(hash_files,menu_names)
 
         self.template = self.template.replace("${menu}$",menu)
-        self.template = self.template.replace("${title}$",self.only_name)
+        self.template = self.template.replace("${title}$",self.epub_name_without_ext)
         self.template = self.template.replace("${content}$",full_content)
-        Path(join(self.outputdir, self.only_name,"./index.html")).write_text(self.template)
+        Path(join(self.outputdir, self.epub_name_without_ext,"./index.html")).write_text(self.template)
         self.copyJs()
 
     def copyJs(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        shutil.copy(os.path.join(script_dir,"jquery.min.js"),self.outputdirSplashOnlyname)
-        shutil.copy(os.path.join(script_dir,"leader-line.min.js"),self.outputdirSplashOnlyname)
+        shutil.copy(os.path.join(script_dir,"jquery.min.js"),self.root_a_path)
+        shutil.copy(os.path.join(script_dir,"leader-line.min.js"),self.root_a_path)
 
 
 def main(args):
