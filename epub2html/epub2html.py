@@ -62,22 +62,27 @@ class Epub2Html():
         pass
 
     def paths_from_opf(self):
-        
-        opf_a_path= self.opf_a_path
-        image_r_opf_path = None
-        text_r_opf_path = None
+        opf_a_path               = self.opf_a_path
+        image_r_opf_path         = None
+        text_r_opf_path          = None
         ncx_path_relative_to_opf = None
         css_path_relative_to_opf = None
-        contents = Path(opf_a_path).read_text()
+        contents                 = Path(opf_a_path).read_text()
+
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
+
         root = etree.fromstring(contents)
         for item in root.findall(".//manifest/"):
+
             href = item.attrib["href"]
-            if image_r_opf_path == None and re.search('image', href, re.IGNORECASE):
+
+            if image_r_opf_path == None \
+            and re.search('image', href, re.IGNORECASE):
                 image_r_opf_path = os.path.dirname(href)
 
-            if text_r_opf_path == None and re.search('text', href, re.IGNORECASE):
+            if text_r_opf_path == None \
+            and re.search('text', href, re.IGNORECASE):
                 text_r_opf_path = os.path.dirname(href)
 
             if "ncx" in item.attrib["media-type"]:
@@ -86,8 +91,9 @@ class Epub2Html():
             if "css" in item.attrib["media-type"]:
                 css_path_relative_to_opf = href
 
-
-            if image_r_opf_path != None and text_r_opf_path != None and ncx_path_relative_to_opf != None:
+            if image_r_opf_path != None \
+            and text_r_opf_path != None \
+            and ncx_path_relative_to_opf != None:
                 break
 
         return image_r_opf_path, text_r_opf_path, ncx_path_relative_to_opf
