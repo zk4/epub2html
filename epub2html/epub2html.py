@@ -47,14 +47,16 @@ class Epub2Html():
                 "\nself.ncx_r_opf_path:",
                 self.ncx_r_opf_path) 
 
-
-    def get_opf_r_root_path(self):
-        meta_a_path = (join(self.root_a_path,"META-INF/container.xml"))
-        contents    = Path(meta_a_path).read_text()
-
+    def get_xml_root(self,path):
+        contents    = Path(path).read_text()
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
         root     = etree.fromstring(contents)
+        return root
+
+    def get_opf_r_root_path(self):
+        meta_a_path = (join(self.root_a_path,"META-INF/container.xml"))
+        root     = self.get_xml_root(meta_a_path)
 
         for item in root.findall(".//rootfiles/"):
             return item.attrib["full-path"]
@@ -63,17 +65,11 @@ class Epub2Html():
         pass
 
     def paths_from_opf(self):
-        opf_a_path               = self.opf_a_path
         image_r_opf_path         = None
         text_r_opf_path          = None
         ncx_path_relative_to_opf = None
         css_path_relative_to_opf = None
-        contents                 = Path(opf_a_path).read_text()
-
-        contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
-        contents = contents.encode('utf-8')
-
-        root = etree.fromstring(contents)
+        root                     = self.get_xml_root(self.opf_a_path)
         for item in root.findall(".//manifest/"):
 
             href = item.attrib["href"]
@@ -135,25 +131,23 @@ class Epub2Html():
                     ulist.append("</ul>")
 
     def genMemuTree(self,path):
-        print("path",path)
-        contents = Path(path).read_text()
-        contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
-        contents = contents.encode('utf-8')
-        root = etree.fromstring(contents)
-        ulist =[]
+        ulist           = []
         need_hash_names = []
-        menu_names = []
+        menu_names      = []
+        root            = self.get_xml_root(path)
+
         ulist.append("<ul class=\"nav nav-sidebar \">")
+
         for c in root.findall("./navMap/navPoint"):
             self._genMemuTree(c,need_hash_names,menu_names,ulist,0)
+
         ulist.append("</ul>")
+
         return "\n".join(ulist),need_hash_names,menu_names
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(self.root_a_path)
-
-
 
     def genContent(self,hash_files,menu_names):
         content_list = []
