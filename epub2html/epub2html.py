@@ -76,6 +76,7 @@ class Epub2Html():
             href = item.attrib["href"]
 
             if image_r_opf_dir == None \
+            and "cover" != item.attrib["id"] \
             and "image" in item.attrib["media-type"]:
                 image_r_opf_dir = dirname(href)
 
@@ -153,9 +154,6 @@ class Epub2Html():
     def genContent(self,hash_files,menu_names):
         content_list = []
         for epub_name_without_ext in  menu_names:
-            # if epub_name_without_ext in  ["part0000.html","part0001.html"]:
-            #     continue
-
             text_a_path = join(self.text_a_dir,epub_name_without_ext)
             raw_text_content = Path(text_a_path).read_text()
 
@@ -183,9 +181,7 @@ class Epub2Html():
 
     def washImageLink(self,full_content):
         img_r_root_dir= os.path.relpath(self.image_a_dir,self.root_a_path)
-        # return re.sub(r"\.\.\/images","./"+self.image_a_dir,full_content)
         full_content =  re.sub("(?<=src=\").*/(.*(jpg|png|jpeg))",img_r_root_dir+"/\\1",full_content)
-        # css_content =  re.sub("(?<=src=\").*/(\w+\.(css))",img_r_root_dir+"/\\1",full_content)
 
         return full_content
         

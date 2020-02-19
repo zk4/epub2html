@@ -30,6 +30,7 @@ link the file with this app, You are good to go.
 
 
 # todo 
+- follow https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs to read source.
 - show/hide button does not locate in the middle of sidebar if menu too long
 - repair ref link
 - images and css location
