@@ -36,14 +36,11 @@ class Epub2Html():
         self.opf_a_path   = join(self.root_a_path,opf_r_root_path)
         self.opf_a_dir    = dirname(join(self.root_a_path,opf_r_root_path))
 
-        self.image_r_opf_dir, self.text_r_opf_dir ,self.ncx_r_opf_path,self.css_r_opf_path = self.paths_from_opf()
-        self.image_a_dir = join(self.opf_a_dir,self.image_r_opf_dir)
-        self.text_a_dir = join(self.opf_a_dir,self.text_r_opf_dir)
+        self.ncx_r_opf_path,self.css_r_opf_path = self.paths_from_opf()
+
         self.ncx_a_path  = join(self.opf_a_dir,self.ncx_r_opf_path)
         self.css_a_path  = join(self.opf_a_dir,self.css_r_opf_path)
 
-        print("self.image_a_dir",self.image_a_dir)
-        print("self.text_a_dir",self.text_a_dir)
         print("self.ncx_a_path",self.ncx_a_path)
         print("self.css_a_path",self.css_a_path)
 
@@ -65,25 +62,13 @@ class Epub2Html():
         pass
 
     def paths_from_opf(self):
-        image_r_opf_dir = None
-        text_r_opf_dir  = None
+
         ncx_r_opf_path   = None
         css_r_opf_path   = None
         root             = self.get_xml_root(self.opf_a_path)
 
         for item in root.findall(".//manifest/"):
-
             href = item.attrib["href"]
-
-            if image_r_opf_dir == None \
-            and "cover" not in item.attrib["id"] \
-            and "image" in item.attrib["media-type"]:
-                image_r_opf_dir = dirname(href)
-
-            if text_r_opf_dir == None \
-            and "title" not in item.attrib["id"] \
-            and "application" in item.attrib["media-type"]:
-                text_r_opf_dir = dirname(href)
 
             if "ncx" in item.attrib["media-type"]:
                 ncx_r_opf_path = href
@@ -91,106 +76,87 @@ class Epub2Html():
             if "css" in item.attrib["media-type"]:
                 css_r_opf_path = href
 
-            if image_r_opf_dir != None \
-            and text_r_opf_dir != None \
-            and ncx_r_opf_path != None \
-            and css_r_opf_path != None:
-                break
-
-        return image_r_opf_dir, text_r_opf_dir, ncx_r_opf_path, css_r_opf_path
+        return  ncx_r_opf_path, css_r_opf_path
 
     def getIndexLoc(self):
         return self.index_a_path
 
     
-    def _genMemuTree(self,node,need_hash_names,menu_names,ulist,depth=0): 
+    def _gen_menu_content(self,node,menus,contents,depth=0): 
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
-            attrib = link.attrib["src"]
+            src = link.attrib["src"]
+            unified_src = src
             
-            htmlpath  = re.findall(".+html",attrib)
-            if len(htmlpath)> 0:
-                n = htmlpath[0]
-                n = n.split("/")[-1]
-                if htmlpath not in menu_names:
-                    menu_names.append(n)
 
-            # only page link, no hash jump
-            if '#' not in attrib:
-                short_link = attrib.split('/')[-1]
-                need_hash_names.append(short_link)
-                attrib = "#"+self.hash(short_link)
+            if '#' not in src:
+                # check if need manually add hash tag
+                unified_src = "#"+self.hash(src)
+                # content need to add id to response hash tag
+                anchor = f"<div id=\"{unified_src}\"></div>"
+                contents.append(anchor)
             else:
-                attrib=re.sub(r".+html","",attrib)
+                # only need hash tag
+                unified_src=re.sub(r".+html","",src)
 
-            ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
+            menus.append(f"<li><a href=\"{unified_src}\">{name}</a></li>")
+
+            # extract only name
+            no_hash_name = src
+            if src.find('#') != -1:
+                no_hash_name = src[:src.find("#")]
+
+            washed_content = self.gen_content(join(dirname(self.ncx_a_path),no_hash_name))
+
+            contents.append(washed_content)
 
             subs =cc.findall("./navPoint")
             if len(subs)>0:
                 for d in subs:
-                    ulist.append("<ul>")
-                    self._genMemuTree(d,need_hash_names,menu_names,ulist,depth+1)
-                    ulist.append("</ul>")
+                    menus.append("<ul>")
+                    self._gen_menu_content(d,menus,contents,depth+1)
+                    menus.append("</ul>")
 
-    def genMemuTree(self):
-        ulist           = []
-        need_hash_names = []
-        menu_names      = []
-        root            = self.get_xml_root(self.ncx_a_path)
+    def gen_menu_content(self):
+        menus      = []
+        contents   = []
+        root       = self.get_xml_root(self.ncx_a_path)
 
-        ulist.append("<ul class=\"nav nav-sidebar \">")
+        menus.append("<ul class=\"nav nav-sidebar \">")
 
         for c in root.findall("./navMap/navPoint"):
-            self._genMemuTree(c,need_hash_names,menu_names,ulist,0)
+            self._gen_menu_content(c,menus,contents,0)
 
-        ulist.append("</ul>")
+        menus.append("</ul>")
 
-        return "\n".join(ulist),need_hash_names,menu_names
+        return "\n".join(menus),"".join(contents)
 
     def unzip(self):
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(self.root_a_path)
 
-    def genContent(self,hash_files,menu_names):
-        content_list = []
-        for epub_name_without_ext in  menu_names:
-            text_a_path = join(self.text_a_dir,epub_name_without_ext)
-            print("text_a_path",text_a_path)
-            raw_text_content = Path(text_a_path).read_text()
+    
+    def gen_content(self,path):
+        raw_text_content = Path(path).read_text()
+        raw_text_content = raw_text_content.encode('utf-8')
+        raw_content_dom = etree.HTML(raw_text_content)
+        content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
+        washed_content = self.wash_body(content)
+        washed_content = self.wash_img_link(path,washed_content)
+        return washed_content
 
-            raw_text_content = raw_text_content.encode('utf-8')
-            raw_content_dom = etree.HTML(raw_text_content)
-            raw_text_content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
-            raw_text_content = self.washBody(raw_text_content)
-
-            # ad slef generated hash
-            short_link = basename(text_a_path)
-            if short_link in hash_files:
-                anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
-                content_list.append(anhor)
-
-            content_list.append(raw_text_content)
-
-        full_content = "".join(content_list)
-        full_content = self.washImageLink(full_content)
-        return full_content
-
-    def washBody(self,sub_content):
+    def wash_body(self,sub_content):
         tmp = sub_content.replace("<body","<div")
         tmp = tmp.replace("</body>","</div>")
         return tmp
 
-    def washImageLink(self,full_content):
-        img_r_root_dir= os.path.relpath(self.image_a_dir,self.root_a_path)
-        full_content =  re.sub("(?<=src=\").*/(.*(jpg|png|jpeg))",img_r_root_dir+"/\\1",full_content)
+    def wash_img_link(self,content_path,content):
+        content =  re.sub("(?<=src=\")(.*)(?=\")",lambda match: os.path.relpath(join(dirname(content_path),match.group(1)),self.root_a_path),content)
 
-        return full_content
+        return content
         
-    def traverse(self,rootdir):
-        for cdirname, _, filenames in os.walk(rootdir):
-            if rootdir ==  cdirname:
-                return filenames 
+
     def hash(self, s):
         import base64
         tag                 = base64.b64encode(s.encode('ascii'))
@@ -203,18 +169,15 @@ class Epub2Html():
 
     
     def gen(self):
-        menu, hash_files, menu_names = self.genMemuTree()
-
-        full_content = self.genContent(hash_files,menu_names)
-
+        menu, full_content = self.gen_menu_content()
         self.template = self.template.replace("${menu}$",menu)
         self.template = self.template.replace("${title}$",self.epub_name_without_ext)
         self.template = self.template.replace("${content}$",full_content)
         self.template = self.template.replace("${css}$",self.gen_r_css())
         Path(join(self.outputdir, self.epub_name_without_ext,"./index.html")).write_text(self.template)
-        self.copyJs()
+        self.gen_jquery_js()
 
-    def copyJs(self):
+    def gen_jquery_js(self):
         script_dir = dirname(abspath(__file__))
         shutil.copy(join(script_dir,"jquery.min.js"),self.root_a_path)
         shutil.copy(join(script_dir,"leader-line.min.js"),self.root_a_path)
