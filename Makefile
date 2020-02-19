@@ -40,7 +40,7 @@ uninstall: rm
 	pip3 uninstall epub2html
 
 run:
-	python3 -m epub2html "./c.epub" -o "./"
+	python3 -m epub2html "./b.epub" -o "./"
 # run:
 # 	python3 -m epub2html "ePUBw.COM+-+我亲爱的厨神先生.时梧.百花洲文艺出版社.2018-6.epub" 	-o ./ 
 # # run:

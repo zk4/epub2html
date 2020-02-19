@@ -38,8 +38,11 @@ class Epub2Html():
 
         self.ncx_r_opf_path,self.css_r_opf_path = self.paths_from_opf()
 
-        self.ncx_a_path  = join(self.opf_a_dir,self.ncx_r_opf_path)
-        self.css_a_path  = join(self.opf_a_dir,self.css_r_opf_path)
+        self.ncx_a_path = join(self.opf_a_dir,self.ncx_r_opf_path)
+        self.css_a_path = join(self.opf_a_dir,self.css_r_opf_path)
+
+        # save the only name html that alredy parsed 
+        self.alread_gen_html = set()
 
         print("self.ncx_a_path",self.ncx_a_path)
         print("self.css_a_path",self.css_a_path)
@@ -88,7 +91,16 @@ class Epub2Html():
             link = cc.find("./content")
             src = link.attrib["src"]
             unified_src = src
-            
+
+            # extract only name
+            no_hash_name = src
+            if src.find('#') != -1:
+                no_hash_name = src[:src.find("#")]
+
+            if no_hash_name  in self.alread_gen_html:
+                continue 
+
+            self.alread_gen_html.add(no_hash_name)
 
             if '#' not in src:
                 # check if need manually add hash tag
@@ -102,10 +114,6 @@ class Epub2Html():
 
             menus.append(f"<li><a href=\"{unified_src}\">{name}</a></li>")
 
-            # extract only name
-            no_hash_name = src
-            if src.find('#') != -1:
-                no_hash_name = src[:src.find("#")]
 
             washed_content = self.gen_content(join(dirname(self.ncx_a_path),no_hash_name))
 
