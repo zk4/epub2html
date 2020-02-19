@@ -184,7 +184,7 @@ class Epub2Html():
     def washImageLink(self,full_content):
         img_r_root_dir= os.path.relpath(self.image_a_dir,self.root_a_path)
         # return re.sub(r"\.\.\/images","./"+self.image_a_dir,full_content)
-        full_content =  re.sub("(?<=src=\").*/(\w+\.(jpg|png|jpeg'))",img_r_root_dir+"/\\1",full_content)
+        full_content =  re.sub("(?<=src=\").*/(.*(jpg|png|jpeg))",img_r_root_dir+"/\\1",full_content)
         # css_content =  re.sub("(?<=src=\").*/(\w+\.(css))",img_r_root_dir+"/\\1",full_content)
 
         return full_content
