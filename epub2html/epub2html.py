@@ -94,7 +94,7 @@ class Epub2Html():
                 # check if need manually add hash tag
                 unified_src = "#"+self.hash(src)
                 # content need to add id to response hash tag
-                anchor = f"<div id=\"{unified_src}\"></div>"
+                anchor = f"<div id=\"{self.hash(src)}\"></div>"
                 contents.append(anchor)
             else:
                 # only need hash tag
@@ -161,7 +161,7 @@ class Epub2Html():
         import base64
         tag                 = base64.b64encode(s.encode('ascii'))
         tag                 = tag.decode("ascii")
-        return tag.rstrip(' = ')
+        return tag.rstrip('=')
     
     def gen_r_css(self):
         css_r_path=os.path.relpath(self.css_a_path,self.root_a_path)
