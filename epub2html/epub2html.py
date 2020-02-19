@@ -12,7 +12,7 @@ import tempfile
 import sys
 import shutil
 import html
-from os.path import dirname,basename,join
+from os.path import dirname,basename,join,splitext,abspath
 import html.parser as htmlparser
 parser = htmlparser.HTMLParser()
 
@@ -20,25 +20,25 @@ class Epub2Html():
     def __init__(self,epubpath,outputdir):
         self.epubpath = epubpath 
 
-        script_dir    = os.path.dirname(os.path.abspath(__file__))
-        template_path = os.path.join(script_dir,"template.html")
+        script_dir    = dirname(abspath(__file__))
+        template_path = join(script_dir,"template.html")
 
         self.template              = Path(template_path).read_text()
-        (epub_name_without_ext,_)  = os.path.splitext(basename(self.epubpath))
+        (epub_name_without_ext,_)  = splitext(basename(self.epubpath))
         self.epub_name_without_ext = epub_name_without_ext
         self.outputdir             = outputdir
-        self.root_a_path           = os.path.join(outputdir,epub_name_without_ext)
+        self.root_a_path           = join(outputdir,epub_name_without_ext)
 
         self.unzip()
 
         opf_r_root_path   = self.get_opf_r_root_path()
-        self.index_a_path = os.path.join(self.root_a_path,"index.html")
+        self.index_a_path = join(self.root_a_path,"index.html")
         self.opf_a_path   = join(self.root_a_path,opf_r_root_path)
         self.opf_a_dir    = dirname(join(self.root_a_path,opf_r_root_path))
 
         self.image_r_opf_path, self.text_r_opf_path ,self.ncx_r_opf_path = self.paths_from_opf()
 
-        self.text_a_path = os.path.join(self.opf_a_dir, self.text_r_opf_path)
+        self.text_a_path = join(self.opf_a_dir, self.text_r_opf_path)
 
         print("self.image_r_opf_path:",
                 self.image_r_opf_path,
@@ -49,12 +49,13 @@ class Epub2Html():
 
 
     def get_opf_r_root_path(self):
-        meta_a_path= (os.path.join(self.root_a_path,"META-INF/container.xml"))
-        contents = Path(meta_a_path).read_text()
+        meta_a_path = (join(self.root_a_path,"META-INF/container.xml"))
+        contents    = Path(meta_a_path).read_text()
+
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
-        
         contents = contents.encode('utf-8')
-        root = etree.fromstring(contents)
+        root     = etree.fromstring(contents)
+
         for item in root.findall(".//rootfiles/"):
             return item.attrib["full-path"]
 
@@ -79,11 +80,11 @@ class Epub2Html():
 
             if image_r_opf_path == None \
             and re.search('image', href, re.IGNORECASE):
-                image_r_opf_path = os.path.dirname(href)
+                image_r_opf_path = dirname(href)
 
             if text_r_opf_path == None \
             and re.search('text', href, re.IGNORECASE):
-                text_r_opf_path = os.path.dirname(href)
+                text_r_opf_path = dirname(href)
 
             if "ncx" in item.attrib["media-type"]:
                 ncx_path_relative_to_opf = href
@@ -122,8 +123,6 @@ class Epub2Html():
                 attrib = "#"+self.hash(short_link)
             else:
                 attrib=re.sub(r".+html","",attrib)
-            print("attrib",attrib)
-
             
 
             ulist.append(f"<li><a href=\"{attrib}\">{name}</a></li>")
@@ -162,7 +161,7 @@ class Epub2Html():
             if epub_name_without_ext in  ["part0000.html","part0001.html"]:
                 continue
 
-            full_path = os.path.join(self.text_a_path,epub_name_without_ext)
+            full_path = join(self.text_a_path,epub_name_without_ext)
             raw_content = Path(full_path).read_text()
 
             raw_content = raw_content.encode('utf-8')
@@ -171,7 +170,7 @@ class Epub2Html():
             raw_content = self.washBody(raw_content)
 
             # ad slef generated hash
-            short_link = os.path.basename(full_path)
+            short_link = basename(full_path)
             if short_link in hash_files:
                 anhor = f"<div id=\"{self.hash(short_link)}\"></div>"
                 content_list.append(anhor)
@@ -203,7 +202,7 @@ class Epub2Html():
 
     
     def gen(self):
-        menu, hash_files, menu_names = self.genMemuTree(os.path.join(self.opf_a_dir,"toc.ncx"))
+        menu, hash_files, menu_names = self.genMemuTree(join(self.opf_a_dir,"toc.ncx"))
 
         full_content = self.genContent(hash_files,menu_names)
 
@@ -214,28 +213,28 @@ class Epub2Html():
         self.copyJs()
 
     def copyJs(self):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        shutil.copy(os.path.join(script_dir,"jquery.min.js"),self.root_a_path)
-        shutil.copy(os.path.join(script_dir,"leader-line.min.js"),self.root_a_path)
+        script_dir = dirname(abspath(__file__))
+        shutil.copy(join(script_dir,"jquery.min.js"),self.root_a_path)
+        shutil.copy(join(script_dir,"leader-line.min.js"),self.root_a_path)
 
 
 def main(args):
     filepath = args.filepath
     if filepath[0]!="." and filepath[0]!="/":
         filepath= "./"+filepath
-    filepath = os.path.abspath(filepath)
+    filepath = abspath(filepath)
 
     outputdir =tempfile.gettempdir()
     if args.outputdir:
-        outputdir = os.path.abspath(args.outputdir)
+        outputdir = abspath(args.outputdir)
 
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    if sys.platform == 'darwin':
-        bashCommand = "open '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand,
-                              shell=True)
+    # if sys.platform == 'darwin':
+    #     bashCommand = "open '" + e.getIndexLoc() +"'"
+    #     subprocess.check_call(bashCommand,
+    #                           shell=True)
 
 
 
