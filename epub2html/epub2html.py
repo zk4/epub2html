@@ -76,11 +76,11 @@ class Epub2Html():
             href = item.attrib["href"]
 
             if image_r_opf_dir == None \
-            and re.search('image', href, re.IGNORECASE):
+            and "image" in item.attrib["media-type"]:
                 image_r_opf_dir = dirname(href)
 
             if text_r_opf_dir == None \
-            and re.search('text', href, re.IGNORECASE):
+            and "application" in item.attrib["media-type"]:
                 text_r_opf_dir = dirname(href)
 
             if "ncx" in item.attrib["media-type"]:
@@ -111,7 +111,7 @@ class Epub2Html():
             if len(htmlpath)> 0:
                 n = htmlpath[0]
                 n = n.split("/")[-1]
-                if n not in menu_names:
+                if htmlpath not in menu_names:
                     menu_names.append(n)
 
             # only page link, no hash jump
@@ -131,11 +131,11 @@ class Epub2Html():
                     self._genMemuTree(d,need_hash_names,menu_names,ulist,depth+1)
                     ulist.append("</ul>")
 
-    def genMemuTree(self,path):
+    def genMemuTree(self):
         ulist           = []
         need_hash_names = []
         menu_names      = []
-        root            = self.get_xml_root(path)
+        root            = self.get_xml_root(self.ncx_a_path)
 
         ulist.append("<ul class=\"nav nav-sidebar \">")
 
@@ -153,8 +153,8 @@ class Epub2Html():
     def genContent(self,hash_files,menu_names):
         content_list = []
         for epub_name_without_ext in  menu_names:
-            if epub_name_without_ext in  ["part0000.html","part0001.html"]:
-                continue
+            # if epub_name_without_ext in  ["part0000.html","part0001.html"]:
+            #     continue
 
             text_a_path = join(self.text_a_dir,epub_name_without_ext)
             raw_text_content = Path(text_a_path).read_text()
@@ -205,7 +205,7 @@ class Epub2Html():
 
     
     def gen(self):
-        menu, hash_files, menu_names = self.genMemuTree(self.ncx_a_path)
+        menu, hash_files, menu_names = self.genMemuTree()
 
         full_content = self.genContent(hash_files,menu_names)
 
