@@ -76,11 +76,12 @@ class Epub2Html():
             href = item.attrib["href"]
 
             if image_r_opf_dir == None \
-            and "cover" != item.attrib["id"] \
+            and "cover" not in item.attrib["id"] \
             and "image" in item.attrib["media-type"]:
                 image_r_opf_dir = dirname(href)
 
             if text_r_opf_dir == None \
+            and "title" not in item.attrib["id"] \
             and "application" in item.attrib["media-type"]:
                 text_r_opf_dir = dirname(href)
 
@@ -155,6 +156,7 @@ class Epub2Html():
         content_list = []
         for epub_name_without_ext in  menu_names:
             text_a_path = join(self.text_a_dir,epub_name_without_ext)
+            print("text_a_path",text_a_path)
             raw_text_content = Path(text_a_path).read_text()
 
             raw_text_content = raw_text_content.encode('utf-8')
