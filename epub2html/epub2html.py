@@ -31,38 +31,69 @@ class Epub2Html():
         self.absfiledir = os.path.abspath(self.filedir)
         self.outputdir =outputdir
         self.outputdirSplashOnlyname =os.path.join(outputdir,only_name)
+        print("self.outputdirSplashOnlyname",self.outputdirSplashOnlyname)
 
         self.unzip()
-        self.imagePath, self.textPath  = self.readOpf()
-        self.textdir = os.path.join(self.outputdirSplashOnlyname ,self.textPath)
+
+        relative_opf_path = self.readMeta()
         self.indexHtmlLoc =  os.path.join(self.outputdirSplashOnlyname,"index.html")
+        self.opfpath= join(self.outputdirSplashOnlyname,relative_opf_path)
+        self.opfdir= dirname(join(self.outputdirSplashOnlyname,relative_opf_path))
+
+        self.imagePath, self.textPath ,self.ncxPath = self.readOpf()
+
+        self.textdir = os.path.join(self.opfdir, self.textPath)
+
+        print("self.imagePath:",
+                self.imagePath,
+                "\nself.textPath:",
+                self.textPath,
+                "\nself.ncxPath:",
+                self.ncxPath) 
+
+
+    def readMeta(self):
+        met_inf= (os.path.join(self.outputdirSplashOnlyname,"META-INF/container.xml"))
+        contents = Path(met_inf).read_text()
+        contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
+        
+        contents = contents.encode('utf-8')
+        root = etree.fromstring(contents)
+        for item in root.findall(".//rootfiles/"):
+            return item.attrib["full-path"]
 
     def readOpf(self):
-        opfpath= (os.path.join(self.outputdirSplashOnlyname,"content.opf"))
-        imagePath = ""
-        textPath = ""
+        
+        opfpath= self.opfpath
+        imagePath = None
+        textPath = None
+        ncxPath = None
         contents = Path(opfpath).read_text()
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
         root = etree.fromstring(contents)
         for item in root.findall(".//manifest/"):
             href = item.attrib["href"]
-            if imagePath == "" and re.search('image', href, re.IGNORECASE):
+            if imagePath == None and re.search('image', href, re.IGNORECASE):
                 imagePath = os.path.dirname(href)
 
-            if textPath == "" and re.search('text', href, re.IGNORECASE):
+            if textPath == None and re.search('text', href, re.IGNORECASE):
                 textPath = os.path.dirname(href)
 
-            if imagePath != "" and textPath != "":
+            if item.attrib["id"] =="ncx":
+                ncxPath = href
+
+
+            if imagePath != None and textPath != None and ncxPath != None:
                 break
 
-        return imagePath, textPath
+        return imagePath, textPath, ncxPath
 
     def getIndexLoc(self):
         return self.indexHtmlLoc
 
     
-    def _genMemuTree(self,node,need_hash_names,menu_names,ulist,depth=0):
+    def _genMemuTree(self,node,need_hash_names,menu_names,ulist,depth=0): 
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
@@ -172,7 +203,7 @@ class Epub2Html():
 
     
     def gen(self):
-        menu, hash_files, menu_names= self.genMemuTree(os.path.join(self.outputdirSplashOnlyname,"toc.ncx"))
+        menu, hash_files, menu_names= self.genMemuTree(os.path.join(self.opfdir,"toc.ncx"))
 
         full_content = self.genContent(hash_files,menu_names)
 
@@ -220,3 +251,6 @@ def createParse():
     parser.add_argument("-o",'--outputdir', type=str,  required=False, help='output dir')
     # parser.add_argument("outputdir",  help="outputdir" )
     return parser
+    
+
+

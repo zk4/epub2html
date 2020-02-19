@@ -30,8 +30,6 @@ link the file with this app, You are good to go.
 
 
 # todo 
-- read as epub standard
 - show/hide button does not locate in the middle of sidebar if menu too long
 - repair ref link
-
-
+- images and css location
