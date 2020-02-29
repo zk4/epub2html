@@ -33,11 +33,11 @@ coverage:
 main:
 	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
 
-install: uninstall
+install: uninstall auto_version
 	pip3 install . 
 
 uninstall: rm
-	pip3 uninstall epub2html
+	pip3 uninstall -y epub2html
 
 run:
 	python3 -m epub2html "./b.epub" -o "./"
