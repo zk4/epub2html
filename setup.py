@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from pathlib import Path
 
 versionfile = Path("./version")
-version = versionfile.read_text()
+version = versionfile.read_text().split("\n")[0]
 [mainv,modulev,minorv] = version.split(".")
 
 VERSION = (int(mainv), int(modulev), int(minorv))
