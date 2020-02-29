@@ -206,10 +206,10 @@ def main(args):
     print("converted! "+ e.getIndexLoc())
     if sys.platform == "win32":
         bashCommand = "start '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand)
+        subprocess.check_call(bashCommand,shell=True)
     else:
         bashCommand = "open '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand)
+        subprocess.check_call(bashCommand,shell=True)
 
 
 
