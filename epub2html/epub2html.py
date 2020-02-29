@@ -204,10 +204,12 @@ def main(args):
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    if sys.platform == 'darwin':
+    if sys.platform == "win32":
+        bashCommand = "start '" + e.getIndexLoc() +"'"
+        subprocess.check_call(bashCommand)
+    else:
         bashCommand = "open '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand,
-                              shell=True)
+        subprocess.check_call(bashCommand)
 
 
 
