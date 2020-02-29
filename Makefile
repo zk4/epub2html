@@ -87,3 +87,6 @@ env:
 
 path:
 	echo $$PATH
+
+auto_version:
+	python version.py

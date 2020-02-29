@@ -2,16 +2,9 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 
-
-
 versionfile = Path("./version")
 version = versionfile.read_text()
 [mainv,modulev,minorv] = version.split(".")
-minorv=1+int(minorv)
-
-newversion =f"{mainv}.{modulev}.{minorv}"
-versionfile.write_text(newversion)
-print(mainv,modulev,minorv)
 
 VERSION = (int(mainv), int(modulev), int(minorv))
 __version__ = '.'.join(map(str, VERSION[0:3]))

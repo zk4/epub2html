@@ -24,6 +24,309 @@
      html body {
         font-family: Consolas, FangSong, Lantinghei SC, Helvetica Neue,
           Helvetica, Arial, Microsoft YaHei, \\5fae\8f6f\96c5\9ed1,
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+		<title>${title}$</title>
+
+    <script type="text/javascript" src="./jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./stylesheet.css" />
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<link rel="stylesheet" href="https://unpkg.com/ant-design-vue@1.0.3/dist/antd.min.css">
+		<script src="https://unpkg.com/ant-design-vue@1.0.3/dist/antd.min.js"></script>
+    <script
+      src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
+    <style type="text/css">
+     html body {
+        font-family: Consolas, FangSong, Lantinghei SC, Helvetica Neue,
+          Helvetica, Arial, Microsoft YaHei, \\5fae\8f6f\96c5\9ed1,
+          STHeitiSC-Light, simsun, \\5b8b\4f53, WenQuanYi Zen Hei,
+          WenQuanYi Micro Hei, "sans-serif" !important;
+          /* -webkit-font-smoothing: antialiased  !important; */
+          font-size: 18px !important;
+          height: 100% !important;
+      }
+      .sidebar {
+        font-size: 15px !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        background-color: #324057;
+        background-color: #f5f5f5;
+        border-right: 1px solid #eee;
+        width: 300px;
+        float: left;
+        height: 100%;
+        overflow: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        -webkit-box-shadow: #ccc 0 0 10px;
+        box-shadow: #ccc 0 0 10px;
+        box-sizing: border-box;
+      }
+      .main {
+        margin-left: 0;
+        height: 100%;
+      }
+
+      /*菜单显示按钮*/
+      .sidebar > .closeMenu > span {
+        opacity: 0;
+        position: absolute;
+        right: 0px;
+        top: 50%;
+        font-size: 25px;
+        color: #bfcbd9;
+        border-radius: 100%;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        margin-top: -25px;
+        padding-top: 3px;
+        padding-left: 9px;
+        transform-origin: 20px 20px;
+        cursor: pointer;
+        transition: all 0.1s;
+      }
+      .sidebar > .closeMenu > span {
+        opacity: 0;
+        position: absolute;
+        right: 0px;
+        top: 50%;
+        font-size: 25px;
+        color: #bfcbd9;
+        border-radius: 100%;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        margin-top: -25px;
+        padding-top: 3px;
+        padding-left: 9px;
+        transform-origin: 20px 20px;
+        cursor: pointer;
+        transition: all 0.1s;
+      }
+      .sidebar > .closeMenu > span:last-child {
+        display: none;
+      }
+      /* Sidebar navigation */
+      .nav-sidebar {
+        margin-right: 30px;
+        padding: 20px 0;
+        background-color: #f5f5f5;
+        cursor: pointer;
+      }
+      .nav-sidebar > li > a {
+        color: #337ab7;
+      }
+      .menuItem:hover > a {
+        background-color: #eee;
+      }
+      .nav .active > a,
+      .nav-sidebar .active:hover > a {
+        background-color: #428bca;
+        color: #fff;
+      }
+			.lightli {
+
+        color: red;
+			}
+      .index {
+        /* position: relative; */
+        /* top: 45%; */
+        /* text-align: center; */
+        /* font-size: 38px; */
+        /* color: #ccc; */
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="list_left">
+      ${menu}$
+			
+			<ul>
+				<li><a href="#hello">hello</a></li>
+				<li><a href="#world">world</a></li>
+			</ul>
+      <div class="closeMenu">
+        <span class="glyphicon glyphicon-triangle-left"></span>
+        <span class="glyphicon glyphicon-triangle-right"></span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="index">
+        ${content}$
+				<div id="app">
+<template>
+  <div>
+    <a-button type="primary">Primary</a-button>
+    <a-button>Default</a-button>
+    <a-button type="dashed">Dashed</a-button>
+    <a-button type="danger">Danger</a-button>
+    <a-config-provider :autoInsertSpaceInButton="false">
+      <a-button type="primary">按钮</a-button>
+    </a-config-provider>
+    <a-button type="primary">按钮</a-button>
+    <a-button type="link">Link</a-button>
+  </div>
+</template>
+			</div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      // shrink  menu
+      // $(document).ready(function() {
+      // $('li').click(function(e) {
+      // e.stopPropagation();
+      // $(this).next('ul').slideToggle(100);
+      // });
+      // });
+
+      $(document).ready(function() {
+
+				 function isOnScreen(elem) {
+					// if the element doesn't exist, abort
+					if( elem.length == 0 ) {
+						return;
+					}
+					var $window = jQuery(window)
+					var viewport_top = $window.scrollTop()
+					var viewport_height = $window.height()
+					var viewport_bottom = viewport_top + viewport_height
+					var $elem = jQuery(elem)
+					var top = $elem.offset().top
+					var height = $elem.height()
+					var bottom = top + height
+
+					return (top >= viewport_top && top < viewport_bottom) ||
+					(bottom > viewport_top && bottom <= viewport_bottom) ||
+					(height > viewport_height && top <= viewport_top && bottom >= viewport_bottom)
+				}
+				
+				var getIdArray = function() {
+						return document.querySelectorAll('*[id]')
+					};
+				<!-- var ars =getIdArray(); -->
+				<!-- var previouslightmenu=null; -->
+				<!-- window.addEventListener('scroll', function(e) { -->
+				<!-- 	ars.forEach(function(a){ -->
+				<!-- 		if("list_left"!=a.id && isOnScreen( $(document.getElementById(a.id)) ) ) { --> 
+				<!-- 			var currentlightmenu = $('a[href*="' + a.id + '"]') -->
+				<!-- 				currentlightmenu.addClass("lightli"); -->
+
+				<!-- 			console.log( a.id+'  The specified container is in view.' + currentlightmenu.attr('href') ); -->
+				<!-- 			if (previouslightmenu && previouslightmenu.attr('href') != currentlightmenu.attr('href')){ -->
+				<!-- 				  console.log("remove") -->
+				<!-- 					previouslightmenu.removeClass("lightli") -->
+				<!-- 				} -->
+				<!-- 				previouslightmenu= currentlightmenu; -->
+
+				<!-- 		} -->
+
+				<!-- 	}) -->
+				<!-- }) -->
+
+				window.addEventListener("beforeprint", function(event) {
+					$(".main").animate({ margin: "0 auto", marginLeft: 0 }, "linear");
+					$(".sidebar").hide()
+
+				});
+				window.addEventListener("afterprint", function(event) { 
+					$(".sidebar").show()
+					$(".main").animate({ marginLeft: moveLeft + 15 }, "linear");
+				});
+      //fixed定位 高度满屏
+      $(".sidebar").height($(window).height());
+
+      //实现显示隐藏可以删除
+      $(".sidebar").on("mouseover", function() {
+        $(".closeMenu > span").css({
+          opacity: 1
+        });
+      });
+      $(".sidebar").on("mouseleave blur", function() {
+        $(".closeMenu > span").css({
+          opacity: 0
+        });
+      });
+
+      var moveLeft = $("#list_left").width();
+
+      //设置内容快初始位置
+      $(".main").css({ marginLeft: moveLeft });
+
+      //判断隐藏显示核心代码
+      var isShow = true;
+      $(".closeMenu span").click(function() {
+        $(this)
+          .hide()
+          .siblings()
+          .show();
+        if (isShow) {
+          $("#list_left").animate(
+            {
+              marginLeft: -(moveLeft - 30) //30 刚好显示icon图标
+            },
+            200,
+            "linear",
+            function() {
+              isShow = false;
+              $(".closeMenu > span").css({
+                opacity: 1
+              });
+            }
+          );
+          $(".main").animate({ margin: "0 auto", marginLeft: 15 }, "linear");
+        } else {
+          $("#list_left").animate(
+            {
+              marginLeft: 0
+            },
+            200,
+            "linear",
+            function() {
+              isShow = true;
+            }
+          );
+          $(".main").animate({ marginLeft: moveLeft + 15 }, "linear");
+        }
+      });
+
+      $(window).resize(function() {
+        $("#list_left").height($(window).height());
+      });
+      });
+
+
+
+
+    </script>
+		<script>
+	Vue.use(antd);
+  Vue.use(antd.Button);
+		var app = new Vue({
+			el: '#app',
+			data: {
+			message: 'Hello Vue!'
+			}
+		})
+		</script>
+  </body>
+</html>
           STHeitiSC-Light, simsun, \\5b8b\4f53, WenQuanYi Zen Hei,
           WenQuanYi Micro Hei, "sans-serif" !important;
           /* -webkit-font-smoothing: antialiased  !important; */
