@@ -1,3 +1,4 @@
+
 # why 
 Read epub in PC is pain as hell. I have tried a lot tool for better view experience. No luck.
 - Loading is slow because of the splitted file.
@@ -8,6 +9,10 @@ BUT! we have chrome! Why dont we take advantage of it.
 So, the basic idea is converting epub to a static html. That's it.
 
 ![](https://github.com/zk4/epub2html/blob/master/demo.gif?raw=true)
+
+# Tested platform 
+- Mac
+
 
 # usage 
 ``` bash
