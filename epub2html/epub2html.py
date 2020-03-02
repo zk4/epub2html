@@ -23,7 +23,7 @@ class Epub2Html():
         script_dir    = dirname(abspath(__file__))
         template_path = join(script_dir,"template.html")
 
-        self.template              = Path(template_path).read_text()
+        self.template              = Path(template_path).read_text(encoding='utf-8')
         (epub_name_without_ext,_)  = splitext(basename(self.epubpath))
         self.epub_name_without_ext = epub_name_without_ext
         self.outputdir             = outputdir
@@ -48,7 +48,7 @@ class Epub2Html():
         print("self.css_a_path",self.css_a_path)
 
     def get_xml_root(self,path):
-        contents    = Path(path).read_text()
+        contents    = Path(path).read_text(encoding='utf-8')
         contents = re.sub(' xmlns="[^"]+"', '', contents, count=1)
         contents = contents.encode('utf-8')
         root     = etree.fromstring(contents)
@@ -146,7 +146,7 @@ class Epub2Html():
 
     
     def gen_content(self,path):
-        raw_text_content = Path(path).read_text()
+        raw_text_content = Path(path).read_text(encode='utf-8')
         raw_text_content = raw_text_content.encode('utf-8')
         raw_content_dom = etree.HTML(raw_text_content)
         content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
