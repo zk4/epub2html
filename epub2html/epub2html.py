@@ -182,7 +182,7 @@ class Epub2Html():
         self.template = self.template.replace("${title}$",self.epub_name_without_ext)
         self.template = self.template.replace("${content}$",full_content)
         self.template = self.template.replace("${css}$",self.gen_r_css())
-        Path(join(self.outputdir, self.epub_name_without_ext,"./index.html")).write_text(self.template)
+        Path(join(self.outputdir, self.epub_name_without_ext,"./index.html")).write_text(self.template,encoding='utf-8')
         self.gen_jquery_js()
 
     def gen_jquery_js(self):
