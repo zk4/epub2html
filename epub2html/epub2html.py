@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import zipfile
 import subprocess
+import webbrowser
 import os
 import tempfile
 import sys
@@ -204,12 +205,13 @@ def main(args):
     e = Epub2Html(filepath,outputdir)
     e.gen()
     print("converted! "+ e.getIndexLoc())
-    if sys.platform == "win32":
-        bashCommand = "start '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand,shell=True)
-    else:
-        bashCommand = "open '" + e.getIndexLoc() +"'"
-        subprocess.check_call(bashCommand,shell=True)
+    webbrowser.open(e.getIndexLoc(), new=2)  # open in new tab
+    # if sys.platform == "win32":
+    #     bashCommand = "start '" + e.getIndexLoc() +"'"
+    #     subprocess.check_call(bashCommand,shell=True)
+    # else:
+    #     bashCommand = "open '" + e.getIndexLoc() +"'"
+    #     subprocess.check_call(bashCommand,shell=True)
 
 
 
