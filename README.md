@@ -12,7 +12,7 @@ So, the basic idea is converting epub to a static html. That's it.
 
 # Tested platform 
 - Mac
-
+- Windows
 
 # usage 
 ``` bash
