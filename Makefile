@@ -67,11 +67,11 @@ upload-to-prod: rm auto_version
 	twine upload dist/*
 
 
-freeze-only:
+freeze:
 	# pipreqs will find the module the project really depneds
 	pipreqs . --force
 
-freeze:
+freeze-all:
 	#  pip3 will find all the module not belong to standard  library
 	pip3 freeze > requirements.txt
 
