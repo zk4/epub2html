@@ -6,7 +6,7 @@ Read epub in PC is pain as hell. I have tried a lot tool for better view experie
 - pdf generating is so ugly 
 	
 BUT! we have web browser which is a natural epub reader! Why dont we take advantage of it.
-So, the basic idea is converting epub to a big html,and keep the menu jump entries.That's it.
+So, the basic idea is converting epub to a big html. Simple but effective.
 
 ![](https://github.com/zk4/epub2html/blob/master/demo.gif?raw=true)
 
