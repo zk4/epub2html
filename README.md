@@ -5,8 +5,8 @@ Read epub in PC is pain as hell. I have tried a lot tool for better view experie
 - No smooth scrolling.
 - pdf generating is so ugly 
 	
-BUT! we have chrome! Why dont we take advantage of it.
-So, the basic idea is converting epub to a static html. That's it.
+BUT! we have web browser which is a natural epub reader! Why dont we take advantage of it.
+So, the basic idea is converting epub to a big html,and keep the menu jump entries.That's it.
 
 ![](https://github.com/zk4/epub2html/blob/master/demo.gif?raw=true)
 
