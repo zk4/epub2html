@@ -34,10 +34,10 @@ main:
 	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
 
 install: uninstall auto_version
-	pip3 install .
+	sudo pip3 install .
 
 uninstall: rm
-	pip3 uninstall -y epub2html
+	sudo pip3 uninstall -y epub2html
 
 run:
 	python3 -m epub2html "./b.epub" -o "./"
