@@ -17,9 +17,9 @@ from os.path import dirname,basename,join,splitext,abspath
 import html.parser as htmlparser
 parser = htmlparser.HTMLParser()
 
-class Epub2Html(): 
+class Epub2Html():
     def __init__(self,epubpath,outputdir):
-        self.epubpath = epubpath 
+        self.epubpath = epubpath
 
         script_dir    = dirname(abspath(__file__))
         template_path = join(script_dir,"template.html")
@@ -42,7 +42,7 @@ class Epub2Html():
         self.ncx_a_path = join(self.opf_a_dir,self.ncx_r_opf_path)
         self.css_a_path = join(self.opf_a_dir,self.css_r_opf_path)
 
-        # save the only name html that alredy parsed 
+        # save the only name html that alredy parsed
         self.alread_gen_html = set()
 
         print("self.ncx_a_path",self.ncx_a_path)
@@ -85,8 +85,8 @@ class Epub2Html():
     def getIndexLoc(self):
         return self.index_a_path
 
-    
-    def _gen_menu_content(self,node,menus,contents,depth=0): 
+
+    def _gen_menu_content(self,node,menus,contents,depth=0):
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
@@ -98,8 +98,8 @@ class Epub2Html():
             if src.find('#') != -1:
                 no_hash_name = src[:src.find("#")]
 
-            if no_hash_name  in self.alread_gen_html:
-                continue 
+            # if no_hash_name  in self.alread_gen_html:
+                # continue
 
             self.alread_gen_html.add(no_hash_name)
 
@@ -145,7 +145,7 @@ class Epub2Html():
         with zipfile.ZipFile(self.epubpath,'r') as zip_ref:
             zip_ref.extractall(self.root_a_path)
 
-    
+
     def gen_content(self,path):
         raw_text_content = Path(path).read_text(encoding='utf-8')
         raw_text_content = raw_text_content.encode('utf-8')
@@ -164,19 +164,19 @@ class Epub2Html():
         content =  re.sub("(?<=src=\")(.*)(?=\")",lambda match: os.path.relpath(join(dirname(content_path),match.group(1)),self.root_a_path),content)
 
         return content
-        
+
 
     def hash(self, s):
         import base64
         tag                 = base64.b64encode(s.encode('ascii'))
         tag                 = tag.decode("ascii")
         return tag.rstrip('=')
-    
+
     def gen_r_css(self):
         css_r_path=os.path.relpath(self.css_a_path,self.root_a_path)
         return f'<link rel="stylesheet" href="{css_r_path}" />'
 
-    
+
     def gen(self):
         menu, full_content = self.gen_menu_content()
         self.template = self.template.replace("${menu}$",menu)
@@ -225,6 +225,6 @@ def createParse():
     parser.add_argument("-o",'--outputdir', type=str,  required=False, help='output dir')
     # parser.add_argument("outputdir",  help="outputdir" )
     return parser
-    
+
 
 
