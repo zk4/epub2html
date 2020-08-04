@@ -223,6 +223,8 @@ def createParse():
     parser = argparse.ArgumentParser( formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="")
     parser.add_argument("filepath",  help="filepath" )
     parser.add_argument("-o",'--outputdir', type=str,  required=False, help='output dir')
+    # version =Path(join(".","version")).read_text()
+    # parser.add_argument('--version', action='version', version=version)
     # parser.add_argument("outputdir",  help="outputdir" )
     return parser
 
