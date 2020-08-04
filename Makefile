@@ -36,7 +36,7 @@ main:
 any:
 	python3 -m epub2html "./$(t).epub"
 
-install: uninstall auto_version
+install: uninstall
 	sudo pip3 install .
 
 uninstall: rm
