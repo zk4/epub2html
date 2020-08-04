@@ -31,7 +31,10 @@ coverage:
 	pytest --cov=epub2html/ tests/
 
 main:
-	python3 -m epub2html "./VimShi Yong Ji Qiao  Di 2Ban - Drew Neil Ni Er.epub"
+	python3 -m epub2html "./b.epub"
+
+any:
+	python3 -m epub2html "./$(t).epub"
 
 install: uninstall auto_version
 	sudo pip3 install .

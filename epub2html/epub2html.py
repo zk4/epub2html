@@ -98,11 +98,6 @@ class Epub2Html():
             if src.find('#') != -1:
                 no_hash_name = src[:src.find("#")]
 
-            # if no_hash_name  in self.alread_gen_html:
-                # continue
-
-            self.alread_gen_html.add(no_hash_name)
-
             if '#' not in src:
                 # check if need manually add hash tag
                 unified_src = "#"+self.hash(src)
@@ -113,8 +108,13 @@ class Epub2Html():
                 # only need hash tag
                 unified_src=re.sub(r".+html","",src)
 
+
             menus.append(f"<li><a href=\"{unified_src}\">{name}</a></li>")
 
+            if no_hash_name  in self.alread_gen_html:
+                continue
+
+            self.alread_gen_html.add(no_hash_name)
 
             washed_content = self.gen_content(join(dirname(self.ncx_a_path),no_hash_name))
 
