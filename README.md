@@ -30,10 +30,12 @@ will open your converted epub html file in browser .
 use automator, generate the app, create a `Run shell script` module
 ``` 
 source ~/.bash_profile
-epub2html "$1"
+/usr/local/bin/epub2html "$1"
 ```
+check `which epub2html` in your bash to make sure it's the right path.
 save it, 
 link the file with this app, You are good to go.
+
 
 
 # todo 
