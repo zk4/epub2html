@@ -147,7 +147,7 @@ class Epub2Html():
 
 
     def gen_content(self,path):
-        raw_text_content = Path(path).read_text(encoding='utf-8')
+        raw_text_content = Path(path).read_bytes()
         # raw_text_content = raw_text_content.encode('utf-8')
         raw_content_dom = etree.HTML(raw_text_content)
         content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
