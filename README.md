@@ -1,6 +1,6 @@
 
 # why 
-Read epub in PC is pain as hell. I have tried a lot tool like `calibre` `epubreader` for better view experience. However, some of the pifalls always exist in one or another.
+Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epubreader` for better view experience. However, some of the pifalls always exist in one or another.
 - Loading is slow because of the splitted file.
 - No smooth scrolling.
 - pdf generating is so ugly 
