@@ -40,13 +40,14 @@ class Epub2Html():
         self.ncx_r_opf_path,self.css_r_opf_path = self.paths_from_opf()
 
         self.ncx_a_path = join(self.opf_a_dir,self.ncx_r_opf_path)
-        self.css_a_path = join(self.opf_a_dir,self.css_r_opf_path)
+
+        if self.css_r_opf_path:
+            self.css_a_path = join(self.opf_a_dir,self.css_r_opf_path)
 
         # save the only name html that alredy parsed
         self.alread_gen_html = set()
 
         print("self.ncx_a_path",self.ncx_a_path)
-        print("self.css_a_path",self.css_a_path)
 
     def get_xml_root(self,path):
         contents    = Path(path).read_text(encoding='utf-8')
@@ -148,7 +149,7 @@ class Epub2Html():
 
     def gen_content(self,path):
         raw_text_content = Path(path).read_bytes()
-        # raw_text_content = raw_text_content.encode('utf-8')
+        raw_text_content = raw_text_content.decode('utf-8')
         raw_content_dom = etree.HTML(raw_text_content)
         content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
         washed_content = self.wash_body(content)
@@ -173,8 +174,11 @@ class Epub2Html():
         return tag.rstrip('=')
 
     def gen_r_css(self):
-        css_r_path=os.path.relpath(self.css_a_path,self.root_a_path)
-        return f'<link rel="stylesheet" href="{css_r_path}" />'
+        try:
+            css_r_path=os.path.relpath(self.css_a_path,self.root_a_path)
+            return f'<link rel="stylesheet" href="{css_r_path}" />'
+        except Exception as e:
+            return f'<link rel="stylesheet" href="" />'
 
 
     def gen(self):

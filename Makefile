@@ -30,8 +30,11 @@ coverage-html:
 coverage:
 	pytest --cov=epub2html/ tests/
 
-main:
-	python3 -m epub2html "./b.epub"
+maina:
+	python3 -m epub2html "./a.epub"
+
+mainb:
+	python3 -m epub2html "./a.epub"
 
 any:
 	python3 -m epub2html "./$(t).epub"
@@ -43,11 +46,7 @@ uninstall: rm
 	sudo pip3 uninstall -y epub2html
 
 run:
-	python3 -m epub2html "./b.epub" -o "./"
-# run:
-# 	python3 -m epub2html "ePUBw.COM+-+我亲爱的厨神先生.时梧.百花洲文艺出版社.2018-6.epub" 	-o ./
-# # run:
-# 	python3 -m epub2html "/Users/zk/Downloads/隐性逻辑：教你快速切换思考方式-卡尔•诺顿.epub" -o ./
+	python3 -m epub2html "./llvmcookbook.epub" -o "./"
 
 wrun:
 	watchexec -rce py "source ~/.bash_profile && make run"
