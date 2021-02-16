@@ -150,6 +150,11 @@ class Epub2Html():
     def gen_content(self,path):
         raw_text_content = Path(path).read_bytes()
         raw_text_content = raw_text_content.decode('utf-8')
+
+        # temp fix:
+        # Unicode strings with encoding declaration are not supported. Please use bytes input or XML fragments without declaration.
+        raw_text_content = "\n".join(raw_text_content.split("\n")[1:])
+
         raw_content_dom = etree.HTML(raw_text_content)
         content = etree.tostring(raw_content_dom.xpath("//body")[0],method='html').decode('utf-8')
         washed_content = self.wash_body(content)
