@@ -15,6 +15,8 @@ import shutil
 import html
 from os.path import dirname,basename,join,splitext,abspath
 import html.parser as htmlparser
+import urllib.parse
+
 parser = htmlparser.HTMLParser()
 
 class Epub2Html():
@@ -91,7 +93,7 @@ class Epub2Html():
         for cc in node.findall("."):
             name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
-            src = link.attrib["src"]
+            src = urllib.parse.unquote(link.attrib["src"])
             unified_src = src
 
             # extract only name
@@ -148,6 +150,7 @@ class Epub2Html():
 
 
     def gen_content(self,path):
+        print("==>",path)
         raw_text_content = Path(path).read_bytes()
         raw_text_content = raw_text_content.decode('utf-8')
 
