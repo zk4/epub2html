@@ -1,8 +1,8 @@
 
 # why 
 Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epubreader` for better view experience. However, some of the pifalls always exist in one or another.
-- Loading is super slow for big epub because of the splitted file.
-- No smooth scrolling. Caculatiing pages for ever.
+- Loading is super slow for big epub because of the splitted files.
+- No smooth scrolling. 
 	
 So I wonder. I have a web browser like  Chrome which is a natural epub reader. 
 And we can install any plugin we want from google store.  for example, I use vim binding a lot, how do we navigate in epub with vim binding by the power of vimium plugin.
@@ -46,4 +46,4 @@ pip install -r requirements.txt
 
 
 # Last
-I won't follow the [standard](https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs) to parse epub, since it's too crumbsome. If some epub is not openable.Please make a PR ,or,sobmit the epub to the issues, I would fix it as soon as I can.
+I won't follow the [standard](https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs) to parse epub, since it's way too complicated. If some epub is not openable.Please make a PR ,or,sobmit the epub to the issues, I would fix it as soon as I can.
