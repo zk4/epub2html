@@ -1,5 +1,5 @@
 
-# why 
+# Why 
 Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epubreader` for better view experience. However, some of the pifalls always exist in one or another.
 - Loading is super slow for big epub because of the splitted files.
 - No smooth scrolling. 
@@ -15,7 +15,7 @@ So, the basic idea is converting epub to a big html. Simple but effective.
 - Mac
 - Windows
 
-# usage 
+# Usage 
 ``` bash
 pip install epub2html
 epub2html abc.epub  
@@ -24,7 +24,7 @@ epub2html abc.epub
 will open your converted epub html file in browser .
 
 
-# open with double click like normal file (mac)
+# Open with double click like normal file (mac)
 
 use automator, generate the app, create a `Run shell script` module
 ``` 
@@ -36,7 +36,7 @@ save it,
 link the file with this app, You are good to go.
 
 
-# dev
+# Dev
 
 ``` python
 python3 -m venv --clear .p3env
