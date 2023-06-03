@@ -5,9 +5,7 @@ Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epub
 - No smooth scrolling. 
 	
 So I wonder. I have a web browser like  Chrome which is a natural epub reader. 
-And we can install any plugin we want from google store.  for example, I use vim binding a lot, how do we navigate in epub with vim binding by the power of vimium plugin.
-
-So, the basic idea is converting epub to a big html. Simple but effective.
+The basic idea is converting epub to a big html. Simple but effective.
 
 ![](https://github.com/zk4/epub2html/blob/master/demo.gif?raw=true)
 
