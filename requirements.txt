@@ -1,3 +1,2 @@
-colorama==0.4.4
-lxml==4.5.0
-xmltodict==0.12.0
+lxml==4.9.2
+xmltodict==0.13.0

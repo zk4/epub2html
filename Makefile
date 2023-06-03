@@ -14,19 +14,6 @@ rm:
 	rm -rdf assets
 
 
-wtest:
-	watchexec -rce py "source ~/.bash_profile && make test"
-
-
-test: rm
-	pytest -s -v  tests/
-
-coverage-html:
-	# --cov where you want to cover
-	#  tests  where your test code is
-	pytest --cov=epub2html/ --cov-report=html tests/
-	open htmlcov/index.html
-
 coverage:
 	pytest --cov=epub2html/ tests/
 
@@ -73,11 +60,7 @@ upload-to-prod: rm auto_version
 
 
 freeze:
-	# pipreqs will find the module the project really depneds
-	pipreqs . --force
-
-freeze-all:
-	#  pip3 will find all the module not belong to standard  library
+	echo "use a fresh env first"
 	pip3 freeze > requirements.txt
 
 
