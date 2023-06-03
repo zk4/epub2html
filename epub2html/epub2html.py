@@ -49,7 +49,7 @@ class Epub2Html():
         # save the only name html that alredy parsed
         self.alread_gen_html = set()
 
-        print("self.ncx_a_path",self.ncx_a_path)
+        #  print("self.ncx_a_path",self.ncx_a_path)
 
     def get_xml_root(self,path):
         contents    = Path(path).read_text(encoding='utf-8')
@@ -91,7 +91,9 @@ class Epub2Html():
 
     def _gen_menu_content(self,node,menus,contents,depth=0):
         for cc in node.findall("."):
-            name = cc.find("./navLabel/text").text.strip()
+            name = "[无标题]"
+            if cc.find("./navLabel/text").text:
+                name = cc.find("./navLabel/text").text.strip()
             link = cc.find("./content")
             src = urllib.parse.unquote(link.attrib["src"])
             unified_src = src
@@ -150,7 +152,7 @@ class Epub2Html():
 
 
     def gen_content(self,path):
-        print("==>",path)
+        #  print("==>",path)
         raw_text_content = Path(path).read_bytes()
         raw_text_content = raw_text_content.decode('utf-8')
 
@@ -170,7 +172,15 @@ class Epub2Html():
         return tmp
 
     def wash_img_link(self,content_path,content):
-        content =  re.sub("(?<=src=\")(.*)(?=\")",lambda match: os.path.relpath(join(dirname(content_path),match.group(1)),self.root_a_path),content)
+
+        def replace_src_path(match):
+            src = match.group(1)
+            if src.startswith("http"):
+                return src
+            else:
+                return os.path.relpath(join(dirname(content_path), src), self.root_a_path)
+
+        content = re.sub("(?<=src=\")(.*?)(?=\")", replace_src_path, content)
 
         return content
 
@@ -216,6 +226,7 @@ def main(args):
 
     e = Epub2Html(filepath,outputdir)
     e.gen()
+
     print("converted! "+ e.getIndexLoc())
     if sys.platform == "win32":
         webbrowser.open(e.getIndexLoc(), new=2)  # open in new tab

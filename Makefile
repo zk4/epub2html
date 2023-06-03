@@ -30,10 +30,13 @@ coverage-html:
 coverage:
 	pytest --cov=epub2html/ tests/
 
-maina:
-	python3 -m epub2html "./a.epub"
+dev:
+	python3 -m epub2html "./SuperMemo.epub"
 
-mainb:
+dd:
+	python3 -m epub2html "./dd.epub"
+
+a:
 	python3 -m epub2html "./a.epub"
 
 any:
@@ -91,4 +94,4 @@ path:
 	echo $$PATH
 
 auto_version:
-	python version.py
+	python3 version.py
