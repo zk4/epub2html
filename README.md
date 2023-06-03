@@ -36,6 +36,14 @@ save it,
 link the file with this app, You are good to go.
 
 
+# dev
+
+``` python
+python3 -m venv --clear .p3env
+source .p3env/bin/activate
+pip install -r requirements.txt
+```
+
 
 # Last
 I won't follow the [standard](https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs) to parse epub, since it's too crumbsome. If some epub is not openable.Please make a PR ,or,sobmit the epub to the issues, I would fix it as soon as I can.
