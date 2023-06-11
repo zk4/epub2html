@@ -4,7 +4,7 @@ Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epub
 - Loading is super slow for big epub because of the splitted files.
 - No smooth scrolling. 
 	
-I think most of the app focus too much on the layout, not the content the reader actually cares.
+I think most of the epub reader focus too much on the layout, not the content the reader actually cares.
 So I wonder. I have a web browser like Chrome which is a natural epub reader, and it's fast enough.
 The basic idea is converting epub to a big html. Simple but effective.
 
