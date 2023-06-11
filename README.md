@@ -1,7 +1,7 @@
 Fastest epub reader.
 # Why 
 Reading epub in PC is pain as hell. I have tried a lot tool like `calibre` `epubreader`,`Mac books`, `MarginNote` for quick and good view experience. However, some of the pifalls always exist in one or another.
-- Loading is super slow for big epub because of the splitted files.
+- Loading is super slow for big epub because of splitted files.
 - No smooth scrolling. 
 	
 I think most of the epub reader focus too much on the layout, not the content reader actually cares.
