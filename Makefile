@@ -18,7 +18,7 @@ coverage:
 	pytest --cov=epub2html/ tests/
 
 dev:
-	python3 -m epub2html "./SuperMemo.epub"
+	python3 -m epub2html "./b.epub"
 
 dd:
 	python3 -m epub2html "./dd.epub"

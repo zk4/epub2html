@@ -1,0 +1,6 @@
+venv/**
+.p3env/**
+build/**
+*.egg-info/**
+*.epub
+*.log
