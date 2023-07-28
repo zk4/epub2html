@@ -4,14 +4,14 @@ rm:
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -type d -iname '*egg-info' -exec rm -rdf {} +
-	rm -f .coverage
-	rm -rf htmlcov
-	rm -rf dist
-	rm -rf build
-	rm -rf proxy.py.egg-info
-	rm -rf .pytest_cache
-	rm -rf .hypothesis
-	rm -rdf assets
+	sudo rm -f .coverage
+	sudo rm -rf htmlcov
+	sudo rm -rf dist
+	sudo rm -rf build
+	sudo rm -rf proxy.py.egg-info
+	sudo rm -rf .pytest_cache
+	sudo rm -rf .hypothesis
+	sudo rm -rdf assets
 
 
 coverage:
