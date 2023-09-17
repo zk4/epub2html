@@ -45,4 +45,4 @@ pip install -r requirements.txt
 
 
 # Last
-I won't follow the [standard](https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs) to parse epub, since it's way too complicated. If some epub is not openable.Please make a PR ,or,sobmit the epub to the issues, I would fix it as soon as I can.
+I won't follow the [standard](https://www.w3.org/publishing/epub3/epub-spec.html#sec-intro-epub-specs) to parse epub, since it's way too complicated and epub2html is good enough for me. If some epub is not openable.Please make a PR ,or,submit the epub file in the issue, I would fix it as soon as I can.
