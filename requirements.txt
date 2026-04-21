@@ -1,2 +1,2 @@
-lxml==4.9.2
+lxml==6.1.0
 xmltodict==0.13.0
